@@ -38,90 +38,556 @@
             from { transform: translateX(50px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        .subsection-card {
+            background-color: #1a1c29;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        .subsection-card:hover {
+            transform: translateY(-5px);
+        }
+        .active-subsection {
+            background-color: #3b82f6;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 20, 31, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #1a1c29;
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #e2e8f0;
+            transition: color 0.2s;
+        }
+        .close-button:hover {
+            color: #94a3b8;
+        }
+        .post-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .header-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #1a1c29;
+            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .shine-button {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(to right, #3B82F6, #60A5FA);
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.39);
+        }
+        .shine-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px 0 rgba(0, 118, 255, 0.5);
+        }
+        .shine-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-20deg);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine {
+            to {
+                left: 100%;
+            }
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .update-card {
+            background-color: #1a1c29;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .update-timestamp {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        /* New section styles */
+        .module-content-hidden {
+            display: none;
+        }
+        /* New button styles for "Obtener Libro Ahora" */
+        .glow-button {
+            position: relative;
+            overflow: hidden;
+            background-image: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+            border: 2px solid #3b82f6;
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.9);
+            transform: translateY(-2px);
+            border-color: #60a5fa;
+        }
+        .glow-button:active {
+            transform: translateY(0);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
     </style>
 </head>
 <body class="bg-[#12141f]">
 
-    <!-- Sección de Cabecera (simulando imagen 1) -->
-    <header class="bg-[#1a1c29] text-white py-16">
-        <div class="container-section flex flex-col md:flex-row items-center justify-between">
-            <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left">
-                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-2">Cultura Digital: Marketing y Publicidad en la Era Conectada</h1>
-                <p class="text-xl text-gray-400 mb-6">Por Alejandro Otero</p>
-                <p class="text-lg mb-8">Descubre cómo la cultura digital está transformando la comunicación, interacción y negocios en la era digital.</p>
-                <!-- AQUI está el link del libro para el botón principal -->
-                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Obtén el Libro Ahora</a>
-            </div>
-            <div class="relative md:w-1/2 flex justify-center slide-in-right">
-                <!-- AQUI está la URL de la imagen del libro que subiste. -->
-                <img src="Gemini_Generated_Image_4rqkhq4rqkhq4rqk.jpg" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
-                <!-- AQUI está el link del libro para el botón pequeño "Gratis" -->
-                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Sección de Contenido del Libro (simulando imagen 2) -->
-    <section class="container-section text-white text-center fade-in">
-        <h2 class="text-3xl md:text-4xl font-bold mb-10">¿Qué encontrarás en este libro?</h2>
-        <div class="flex flex-col md:flex-row items-start text-left">
-            <div class="md:w-1/2 pr-0 md:pr-12 mb-8 md:mb-0">
-                <p class="text-lg leading-relaxed">
-                    <span class="text-blue-400">■</span> <strong>Cultura Digital: Marketing y Publicidad en la Era Conectada</strong> de Alejandro Otero no es solo un libro, es una guía para entender el nuevo paradigma que está transformando la forma en que nos comunicamos, interactuamos y hacemos negocios en la era digital.
-                </p>
-                <p class="mt-6 text-lg leading-relaxed">
-                    En sus páginas descubrirás cómo la cultura digital dejó de ser una moda pasajera para convertirse en el eje central de la interacción humana y del marketing moderno.
+    <!-- Modal de Bienvenida -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('postModal')">×</button>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Bienvenida 👋🏻</h2>
+            <p class="text-lg leading-relaxed mb-6">
+                Si estás leyendo esto, significa que quieres aprender marketing y publicidad. Y seguramente estás aquí por una de dos razones:
+                <br><br>
+                1️⃣ Piensas que soy un vendehúmos (déjame decirte que no, dejo que mi cuenta @pxwer.up hable por sí sola).
+                <br>
+                2️⃣ Quieres aprender marketing y publicidad desde cero, pero no hacerlo solo.
+                <br><br>
+                Por eso creé este programa gratuito: cada semana compartiré un e-book práctico, como si fuera la universidad… pero mejor. 🚀
+                <br>
+                Suscríbete ahora y forma parte del 1% que decide crecer.
+            </p>
+            <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
+            <div class="mb-6">
+                <img src="image_32c8af.jpg" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
+                <p class="text-sm mt-2 text-gray-400">
+                    Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
                 </p>
             </div>
-            <div class="md:w-1/2 pl-0 md:pl-12">
-                <h3 class="text-2xl font-bold mb-4">🌐 Lo que encontrarás dentro:</h3>
-                <ul class="list-disc list-inside space-y-3 text-lg leading-relaxed">
-                    <li><strong class="text-blue-400">Los pilares de la cultura digital:</strong> conectividad, interactividad e inmediatez.</li>
-                    <li><strong class="text-blue-400">La evolución del marketing y la publicidad:</strong> de mensajes unidireccionales a conversaciones auténticas y relaciones duraderas.</li>
-                    <li><strong class="text-blue-400">Principios prácticos:</strong> escucha activa, generación de valor, interactividad y adaptabilidad.</li>
-                    <li><strong class="text-blue-400">El nuevo papel del consumidor:</strong> de receptor pasivo a creador y protagonista de las historias de marca.</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección de Resumen y Autor (simulando imagen 3) -->
-    <section class="container-section text-center fade-in">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">En resumen</h2>
-        <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-8">
-            Este libro demuestra que las marcas que abrazan la cultura digital con autenticidad, agilidad y visión estratégica no solo sobrevivirán, sino que crecerán y liderarán en la era conectada.
-        </p>
-        <!-- AQUI está el link del libro para el botón "Descargar Gratis" -->
-        <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
-
-        <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
-            <!-- AQUI está la URL de la imagen del autor que subiste. -->
-            <img src="image_252d2a.jpg" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
-            <div>
-                <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
-                <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
-                <p class="text-lg leading-relaxed">
-    Alejandro Otero es un apasionado del marketing y la publicidad, con la firme creencia de que el aprendizaje debe ser práctico, accesible y compartido. Su misión es acompañar a personas, emprendedores y marcas en su proceso de descubrir cómo conectar con sus audiencias, comunicar sus ideas y crecer en el mundo digital.
-    Con un enfoque basado en la colaboración y la experimentación, Alejandro promueve que todos podamos aprender paso a paso, aplicando conceptos de marketing y publicidad de forma sencilla y efectiva. Para él, cada estrategia, cada campaña y cada interacción son oportunidades para aprender algo nuevo y mejorar.
-    A través de su trabajo, busca inspirar a otros a perder el miedo a probar, equivocarse y volver a intentar, porque el marketing digital no se trata solo de vender, sino de construir relaciones, generar valor y crecer juntos en la era conectada.               
+            <div class="mb-6">
+                <img src="image_32ccab.jpg" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
+                <p class="text-sm mt-2 text-gray-400">
+                    Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
                 </p>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer (simulando imagen 4) -->
-    <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
-        <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
-            <div class="mb-4 md:mb-0">
-                <h4 class="text-2xl font-bold">Cultura Digital</h4>
-                <p class="text-gray-400">Por Alejandro Otero</p>
+            <div class="mb-6">
+                <img src="image_32ccc5.jpg" alt="Captura de pantalla de la cuenta de Instagram con más de 1800 seguidores" class="post-image mx-auto">
+                <p class="text-sm mt-2 text-gray-400">
+                    Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
+                </p>
             </div>
-            <div class="text-sm text-gray-400">
-                <p>&copy; 2025 Todos los derechos reservados.</p>
-                <p>Diseñado para la era digital conectada.</p>
-            </div>
+            <p class="text-lg leading-relaxed mt-8">
+                Es por eso, colega, que después de ver todo este crecimiento quise dar un paso más grande. Dejé de subir videos durante 1 mes para tomar una decisión importante: la mejor forma de avanzar es ayudando a más personas 🚀.
+                Por eso creé este programa 100% gratuito, donde aprenderemos juntos sobre marketing y publicidad, con E-Books gratis 📚 y ejercicios prácticos que te ayudarán a cumplir tus objetivos.
+                La idea es simple: yo te comparto la información y el valor que he estado aprendiendo, y tú lo aplicas en tu proyecto o negocio 💡.
+            </p>
+            <p class="text-lg font-bold mt-4 leading-relaxed text-red-400">
+                Pero ojo 👀, no te recomiendo que te suscribas si solo quieres mirar desde la barrera. Este programa es para quienes quieren pasar de ser espectadores a creadores.
+            </p>
         </div>
-    </footer>
+    </div>
 
+    <!-- Modal para crear una nueva actualización (Solo para el admin) -->
+    <div id="newUpdateModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('newUpdateModal')">×</button>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Crear Nueva Actualización</h2>
+            <form id="updateForm" class="flex flex-col items-center gap-4">
+                <input type="text" id="updateTitle" placeholder="Título de la publicación" class="w-full p-4 rounded-lg bg-[#2d3142] text-white border-2 border-gray-600 focus:outline-none focus:border-blue-500" required>
+                <textarea id="updateContent" placeholder="Contenido de la actualización..." class="w-full h-48 p-4 rounded-lg bg-[#2d3142] text-white border-2 border-gray-600 focus:outline-none focus:border-blue-500" required></textarea>
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1 w-full md:w-auto">
+                    Publicar Actualización 🚀
+                </button>
+            </form>
+            <div id="updateLoading" class="hidden mt-6 flex justify-center items-center">
+                <div class="loading-spinner"></div>
+                <p class="ml-4">Publicando...</p>
+            </div>
+            <p id="updateMessage" class="mt-4 text-green-400"></p>
+        </div>
+    </div>
+
+    <!-- Contenido Principal de la Página -->
+    <div id="mainContent" class="hidden">
+        
+        <!-- Barra de Navegación -->
+        <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
+            <div class="flex-1 flex justify-center space-x-4">
+                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors">
+                    Módulos
+                </button>
+                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-500 transition-colors">
+                    Posts
+                </button>
+            </div>
+            <div class="flex-1 flex justify-end mt-4 md:mt-0">
+                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg no-underline">
+                    Sé parte del 1%
+                </a>
+            </div>
+        </nav>
+        
+        <div class="pt-24">
+            <!-- Sección de Módulos (Inicialmente visible) -->
+            <div id="modulesSection">
+                <header class="bg-[#1a1c29] text-white py-16">
+                    <div class="container-section">
+                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
+                        <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
+                        <div class="flex flex-col items-center">
+                            <!-- Botón que muestra/oculta el contenido -->
+                            <button id="showModuleContentBtn" onclick="toggleModuleContent()" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 bg-blue-500 rounded-lg shadow-lg no-underline mb-4">
+                                <span>1 Cultura Digital: Marketing y Publicidad</span>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Contenido del Módulo que se oculta/muestra -->
+                <div id="moduleContent" class="module-content-hidden">
+                    <section class="container-section flex flex-col items-center justify-center">
+                        <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-4xl">
+                            <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left text-center md:text-left">
+                                <h3 class="text-4xl font-bold mt-16 mb-4">Cultura Digital: Marketing y Publicidad en la Era Conectada</h3>
+                                <p class="text-lg mb-2">Por Alejandro Otero</p>
+                                <p class="text-lg leading-relaxed mb-6">
+                                    Descubre cómo la cultura digital está transformando la comunicación, la interacción y los negocios en la era digital.
+                                </p>
+                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="glow-button text-white font-bold py-3 px-6 rounded-lg no-underline">
+                                    Obtener Libro Ahora
+                                </a>
+                            </div>
+                            <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
+                                <img src="Gemini_Generated_Image_4rqkhq4rqkhq4rqk.jpg" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
+                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="container-section text-center fade-in">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-10">¿Qué encontrarás en este libro?</h2>
+                        <div class="flex flex-col md:flex-row items-start text-left">
+                            <div class="md:w-1/2 pr-0 md:pr-12 mb-8 md:mb-0">
+                                <p class="text-lg leading-relaxed">
+                                    <span class="text-blue-400">■</span> <strong>Cultura Digital: Marketing y Publicidad en la Era Conectada</strong> de Alejandro Otero no es solo un libro, es una guía para entender el nuevo paradigma que está transformando la forma en que nos comunicamos, interactuamos y hacemos negocios en la era digital.
+                                </p>
+                                <p class="mt-6 text-lg leading-relaxed">
+                                    En sus páginas descubrirás cómo la cultura digital dejó de ser una moda pasajera para convertirse en el eje central de la interacción humana y del marketing moderno.
+                                </p>
+                            </div>
+                            <div class="md:w-1/2 pl-0 md:pl-12">
+                                <h3 class="text-2xl font-bold mb-4">🌐 Lo que encontrarás dentro:</h3>
+                                <ul class="list-disc list-inside space-y-3 text-lg leading-relaxed">
+                                    <li><strong class="text-blue-400">Los pilares de la cultura digital:</strong> conectividad, interactividad e inmediatez.</li>
+                                    <li><strong class="text-blue-400">La evolución del marketing y la publicidad:</strong> de mensajes unidireccionales a conversaciones auténticas y relaciones duraderas.</li>
+                                    <li><strong class="text-blue-400">Principios prácticos:</strong> escucha activa, generación de valor, interactividad y adaptabilidad.</li>
+                                    <li><strong class="text-blue-400">El nuevo papel del consumidor:</strong> de receptor pasivo a creador y protagonista de las historias de marca.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="container-section text-center fade-in">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">En resumen</h2>
+                        <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+                            Este libro demuestra que las marcas que abrazan la cultura digital con autenticidad, agilidad y visión estratégica no solo sobrevivirán, sino que crecerán y liderarán en la era conectada.
+                        </p>
+                        <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
+                        <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
+                            <img src="image_252d2a.jpg" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
+                            <div>
+                                <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
+                                <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
+                                <p class="text-lg leading-relaxed">
+                                    Alejandro Otero es un apasionado del marketing y la publicidad, con la firme creencia de que el aprendizaje debe ser práctico, accesible y compartido. Su misión es acompañar a personas, emprendedores y marcas en su proceso de descubrir cómo conectar con sus audiencias, comunicar sus ideas y crecer en el mundo digital.
+                                    Con un enfoque basado en la colaboración y la experimentación, Alejandro promueve que todos podamos aprender paso a paso, aplicando conceptos de marketing y publicidad de forma sencilla y efectiva. Para él, cada estrategia, cada campaña y cada interacción son oportunidades para aprender algo nuevo y mejorar.
+                                    A través de su trabajo, busca inspirar a otros a perder el miedo a probar, equivocarse y volver a intentar, porque el marketing digital no se trata solo de vender, sino de construir relaciones, generar valor y crecer juntos en la era conectada.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Sección de Posts (Inicialmente oculta) -->
+            <div id="postsSection" class="hidden">
+                <section class="container-section text-white mt-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
+                    <p class="text-center text-gray-400 mb-4">ID de usuario: <span id="userIdDisplay" class="font-bold text-white">Cargando...</span></p>
+                    <div id="createUpdateButtonContainer" class="hidden text-center mb-6">
+                        <button onclick="openModal('newUpdateModal')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all">
+                            Crear Actualización
+                        </button>
+                    </div>
+                    <div id="updatesContainer">
+                        <div class="text-center text-gray-400">Cargando actualizaciones...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer (simulando imagen 4) -->
+            <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
+                <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                    <div class="mb-4 md:mb-0">
+                        <h4 class="text-2xl font-bold">Cultura Digital</h4>
+                    </div>
+                    <div class="flex-grow flex justify-center items-center">
+                        <a href="https://www.instagram.com/alejxot_23/" target="_blank" rel="noopener noreferrer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram text-gray-400 hover:text-white transition-colors">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        <p>&copy; 2025 Todos los derechos reservados.</p>
+                        <p>Diseñado para la era digital conectada.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, setLogLevel, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Variables globales
+        let app, auth, db, userId;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        let adminId = null;
+
+        // Elementos del DOM
+        const postModal = document.getElementById('postModal');
+        const mainContent = document.getElementById('mainContent');
+        const modulesSection = document.getElementById('modulesSection');
+        const postsSection = document.getElementById('postsSection');
+        const modulesNavBtn = document.getElementById('modulesNavBtn');
+        const postsNavBtn = document.getElementById('postsNavBtn');
+        const adminControls = document.getElementById('adminControls');
+        const updatesContainer = document.getElementById('updatesContainer');
+        const updateForm = document.getElementById('updateForm');
+        const updateTitleInput = document.getElementById('updateTitle');
+        const updateContentInput = document.getElementById('updateContent');
+        const updateLoading = document.getElementById('updateLoading');
+        const updateMessage = document.getElementById('updateMessage');
+        const createUpdateButtonContainer = document.getElementById('createUpdateButtonContainer');
+        const moduleContent = document.getElementById('moduleContent');
+
+        // Configuración de logs para Firebase (útil para depuración)
+        setLogLevel('debug');
+
+        window.addEventListener('load', async () => {
+            try {
+                if (Object.keys(firebaseConfig).length === 0) {
+                    console.error("Firebase config is missing or empty.");
+                    return;
+                }
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                
+                // Autenticar al usuario
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Esperar a que el estado de autenticación cambie
+                auth.onAuthStateChanged(user => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('userIdDisplay').innerText = userId;
+                        // Mostrar el contenido principal después de la autenticación
+                        mainContent.classList.remove('hidden');
+                        checkAdminStatus();
+                    } else {
+                        document.getElementById('userIdDisplay').innerText = 'No autenticado';
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error during Firebase initialization:", error);
+            }
+        });
+
+        // Función para verificar si el usuario es el administrador
+        async function checkAdminStatus() {
+            try {
+                const adminDocRef = doc(db, `artifacts/${appId}/public/data/settings`, 'admin');
+                const adminDocSnap = await getDoc(adminDocRef);
+
+                if (adminDocSnap.exists()) {
+                    adminId = adminDocSnap.data().adminId;
+                } else {
+                    // Si no existe, el primer usuario en iniciar sesión se convierte en el admin
+                    await setDoc(adminDocRef, { adminId: userId });
+                    adminId = userId;
+                }
+
+                if (userId === adminId) {
+                    createUpdateButtonContainer.classList.remove('hidden');
+                } else {
+                    createUpdateButtonContainer.classList.add('hidden');
+                }
+                
+                fetchUpdates(); // Cargar las publicaciones para todos los usuarios
+            } catch (error) {
+                console.error("Error al verificar el estado de administrador:", error);
+            }
+        }
+
+        // Función para cambiar de sección (Módulos/Posts)
+        window.showSection = (section) => {
+            if (section === 'modules') {
+                modulesSection.classList.remove('hidden');
+                postsSection.classList.add('hidden');
+                modulesNavBtn.classList.add('bg-blue-500');
+                modulesNavBtn.classList.remove('bg-[#1a1c29]');
+                postsNavBtn.classList.remove('bg-blue-500');
+                postsNavBtn.classList.add('bg-[#1a1c29]');
+            } else if (section === 'posts') {
+                postsSection.classList.remove('hidden');
+                modulesSection.classList.add('hidden');
+                postsNavBtn.classList.add('bg-blue-500');
+                postsNavBtn.classList.remove('bg-[#1a1c29]');
+                modulesNavBtn.classList.remove('bg-blue-500');
+                modulesNavBtn.classList.add('bg-[#1a1c29]');
+            }
+        };
+
+        // Funciones para abrir y cerrar modales
+        window.openModal = (modalId) => {
+            document.getElementById(modalId).style.display = 'flex';
+        };
+
+        window.closeModal = (modalId) => {
+            document.getElementById(modalId).style.display = 'none';
+        };
+
+        // Función para mostrar/ocultar el contenido del módulo
+        window.toggleModuleContent = () => {
+            moduleContent.classList.toggle('module-content-hidden');
+        };
+
+        // Manejador del formulario de publicación
+        updateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = updateTitleInput.value;
+            const content = updateContentInput.value;
+
+            if (!title || !content) {
+                updateMessage.innerText = 'El título y el contenido son obligatorios.';
+                updateMessage.classList.add('text-red-400');
+                updateMessage.classList.remove('text-green-400');
+                return;
+            }
+
+            updateLoading.classList.remove('hidden');
+            updateMessage.innerText = '';
+
+            try {
+                // Publicar en la colección pública
+                const updatesCollectionRef = collection(db, `artifacts/${appId}/public/data/updates`);
+                await addDoc(updatesCollectionRef, {
+                    title: title,
+                    content: content,
+                    timestamp: serverTimestamp()
+                });
+
+                updateMessage.innerText = '¡Publicación enviada con éxito!';
+                updateMessage.classList.add('text-green-400');
+                updateMessage.classList.remove('text-red-400');
+                updateForm.reset();
+                setTimeout(() => closeModal('newUpdateModal'), 1500);
+
+            } catch (e) {
+                console.error("Error al añadir documento: ", e);
+                updateMessage.innerText = 'Error al enviar la publicación. Inténtalo de nuevo.';
+                updateMessage.classList.add('text-red-400');
+                updateMessage.classList.remove('text-green-400');
+            } finally {
+                updateLoading.classList.add('hidden');
+            }
+        });
+
+        // Función para cargar las actualizaciones en tiempo real
+        function fetchUpdates() {
+            try {
+                const updatesCollectionRef = collection(db, `artifacts/${appId}/public/data/updates`);
+                onSnapshot(updatesCollectionRef, (querySnapshot) => {
+                    const updates = [];
+                    querySnapshot.forEach((doc) => {
+                        updates.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    updates.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+                    updatesContainer.innerHTML = '';
+                    if (updates.length === 0) {
+                        updatesContainer.innerHTML = '<p class="text-center text-gray-400 mt-4">Aún no hay actualizaciones. ¡Sé el primero en publicar!</p>';
+                    } else {
+                        updates.forEach(update => {
+                            const date = update.timestamp ? new Date(update.timestamp.toMillis()).toLocaleString() : 'Fecha desconocida';
+                            const updateCard = document.createElement('div');
+                            updateCard.className = 'update-card';
+                            updateCard.innerHTML = `
+                                <h3 class="text-xl font-bold mb-2">${update.title}</h3>
+                                <p class="text-lg leading-relaxed">${update.content}</p>
+                                <p class="update-timestamp">Publicado el: ${date}</p>
+                            `;
+                            updatesContainer.appendChild(updateCard);
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error("Error al obtener las actualizaciones:", error);
+                updatesContainer.innerHTML = `<p class="text-center text-red-400 mt-4">Error al cargar las actualizaciones. Por favor, recarga la página.</p>`;
+            }
+        }
+    </script>
 </body>
 </html>

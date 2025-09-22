@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cultura Digital: Marketing y Publicidad en la Era Conectada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0d17;
+            color: #e2e8f0;
+        }
+        .container-section {
+            padding: 4rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .fade-in {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        .slide-in-left {
+            animation: slideInLeft 1.5s ease-out;
+        }
+        .slide-in-right {
+            animation: slideInRight 1.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-[#12141f]">
+
+    <!-- Sección de Cabecera (simulando imagen 1) -->
+    <header class="bg-[#1a1c29] text-white py-16">
+        <div class="container-section flex flex-col md:flex-row items-center justify-between">
+            <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left">
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-2">Cultura Digital: Marketing y Publicidad en la Era Conectada</h1>
+                <p class="text-xl text-gray-400 mb-6">Por Alejandro Otero</p>
+                <p class="text-lg mb-8">Descubre cómo la cultura digital está transformando la comunicación, interacción y negocios en la era digital.</p>
+                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Obtén el Libro Ahora</a>
+            </div>
+            <div class="relative md:w-1/2 flex justify-center slide-in-right">
+                <img src="https://placehold.co/400x400/1a1c29/e2e8f0?text=Imagen+del+libro" alt="Portada del libro Cultura Digital" class="max-h-[400px]">
+                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-gray-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sección de Contenido del Libro (simulando imagen 2) -->
+    <section class="container-section text-white text-center fade-in">
+        <h2 class="text-3xl md:text-4xl font-bold mb-10">¿Qué encontrarás en este libro?</h2>
+        <div class="flex flex-col md:flex-row items-start text-left">
+            <div class="md:w-1/2 pr-0 md:pr-12 mb-8 md:mb-0">
+                <p class="text-lg leading-relaxed">
+                    <span class="text-blue-400">■</span> **Cultura Digital: Marketing y Publicidad en la Era Conectada** de Alejandro Otero no es solo un libro, es una guía para entender el nuevo paradigma que está transformando la forma en que nos comunicamos, interactuamos y hacemos negocios en la era digital.
+                </p>
+                <p class="mt-6 text-lg leading-relaxed">
+                    En sus páginas descubrirás cómo la cultura digital dejó de ser una moda pasajera para convertirse en el eje central de la interacción humana y del marketing moderno.
+                </p>
+            </div>
+            <div class="md:w-1/2 pl-0 md:pl-12">
+                <h3 class="text-2xl font-bold mb-4">🌐 Lo que encontrarás dentro:</h3>
+                <ul class="list-disc list-inside space-y-3 text-lg leading-relaxed">
+                    <li><strong class="text-blue-400">Los pilares de la cultura digital:</strong> conectividad, interactividad e inmediatez.</li>
+                    <li><strong class="text-blue-400">La evolución del marketing y la publicidad:</strong> de mensajes unidireccionales a conversaciones auténticas y relaciones duraderas.</li>
+                    <li><strong class="text-blue-400">Principios prácticos:</strong> escucha activa, generación de valor, interactividad y adaptabilidad.</li>
+                    <li><strong class="text-blue-400">El nuevo papel del consumidor:</strong> de receptor pasivo a creador y protagonista de las historias de marca.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Resumen y Autor (simulando imagen 3) -->
+    <section class="container-section text-center fade-in">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">En resumen</h2>
+        <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+            Este libro demuestra que las marcas que abrazan la cultura digital con autenticidad, agilidad y visión estratégica no solo sobrevivirán, sino que crecerán y liderarán en la era conectada.
+        </p>
+        <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
+
+        <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
+            <div class="w-24 h-24 md:w-32 md:h-32 bg-[#2a2d40] rounded-full flex items-center justify-center text-4xl font-bold text-white shadow-lg mb-6 md:mb-0 md:mr-8 fade-in">
+                AO
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
+                <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
+                <p class="text-lg leading-relaxed">
+                    Experto en marketing digital y cultura conectada, Alejandro Otero comparte su experiencia y conocimientos para ayudarte a navegar en el nuevo paradigma digital.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (simulando imagen 4) -->
+    <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
+        <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+            <div class="mb-4 md:mb-0">
+                <h4 class="text-2xl font-bold">Cultura Digital</h4>
+                <p class="text-gray-400">Por Alejandro Otero</p>
+            </div>
+            <div class="text-sm text-gray-400">
+                <p>&copy; 2025 Todos los derechos reservados.</p>
+                <p>Diseñado para la era digital conectada.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

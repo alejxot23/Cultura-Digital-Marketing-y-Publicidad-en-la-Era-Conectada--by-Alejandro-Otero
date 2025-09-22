@@ -43,6 +43,7 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             transition: transform 0.2s ease-in-out;
+            cursor: pointer;
         }
         .subsection-card:hover {
             transform: translateY(-5px);
@@ -130,34 +131,9 @@
                 left: 100%;
             }
         }
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .update-card {
-            background-color: #1a1c29;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        .update-timestamp {
-            color: #94a3b8;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-        /* New section styles */
         .module-content-hidden {
             display: none;
         }
-        /* New button styles for "Obtener Libro Ahora" */
         .glow-button {
             position: relative;
             overflow: hidden;
@@ -174,6 +150,32 @@
         .glow-button:active {
             transform: translateY(0);
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        .countdown-container {
+            background-color: #2d3142;
+            padding: 2rem;
+            border-radius: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
+        }
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .countdown-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -197,19 +199,19 @@
             </p>
             <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
             <div class="mb-6">
-                <img src="image_32c8af.jpg" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
                 </p>
             </div>
             <div class="mb-6">
-                <img src="image_32ccab.jpg" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
                 </p>
             </div>
             <div class="mb-6">
-                <img src="image_32ccc5.jpg" alt="Captura de pantalla de la cuenta de Instagram con más de 1800 seguidores" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+de+1800+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
                 </p>
@@ -225,28 +227,8 @@
         </div>
     </div>
 
-    <!-- Modal para crear una nueva actualización (Solo para el admin) -->
-    <div id="newUpdateModal" class="modal">
-        <div class="modal-content">
-            <button class="close-button" onclick="closeModal('newUpdateModal')">×</button>
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Crear Nueva Actualización</h2>
-            <form id="updateForm" class="flex flex-col items-center gap-4">
-                <input type="text" id="updateTitle" placeholder="Título de la publicación" class="w-full p-4 rounded-lg bg-[#2d3142] text-white border-2 border-gray-600 focus:outline-none focus:border-blue-500" required>
-                <textarea id="updateContent" placeholder="Contenido de la actualización..." class="w-full h-48 p-4 rounded-lg bg-[#2d3142] text-white border-2 border-gray-600 focus:outline-none focus:border-blue-500" required></textarea>
-                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1 w-full md:w-auto">
-                    Publicar Actualización 🚀
-                </button>
-            </form>
-            <div id="updateLoading" class="hidden mt-6 flex justify-center items-center">
-                <div class="loading-spinner"></div>
-                <p class="ml-4">Publicando...</p>
-            </div>
-            <p id="updateMessage" class="mt-4 text-green-400"></p>
-        </div>
-    </div>
-
     <!-- Contenido Principal de la Página -->
-    <div id="mainContent" class="hidden">
+    <div id="mainContent">
         
         <!-- Barra de Navegación -->
         <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
@@ -272,17 +254,19 @@
                     <div class="container-section">
                         <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
                         <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
-                        <div class="flex flex-col items-center">
-                            <!-- Botón que muestra/oculta el contenido -->
-                            <button id="showModuleContentBtn" onclick="toggleModuleContent()" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 bg-blue-500 rounded-lg shadow-lg no-underline mb-4">
+                        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection">
                                 <span>1 Cultura Digital: Marketing y Publicidad</span>
+                            </button>
+                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline">
+                                <span>2. Fundamentos de la comunicación</span>
                             </button>
                         </div>
                     </div>
                 </header>
                 
-                <!-- Contenido del Módulo que se oculta/muestra -->
-                <div id="moduleContent" class="module-content-hidden">
+                <!-- Contenedor de contenido para Módulo 1 -->
+                <div id="module1Content">
                     <section class="container-section flex flex-col items-center justify-center">
                         <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-4xl">
                             <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left text-center md:text-left">
@@ -296,7 +280,7 @@
                                 </a>
                             </div>
                             <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
-                                <img src="Gemini_Generated_Image_4rqkhq4rqkhq4rqk.jpg" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
+                                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+del+libro+Cultura+Digital" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
                                 <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
                             </div>
                         </div>
@@ -332,7 +316,7 @@
                         </p>
                         <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
                         <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
-                            <img src="image_252d2a.jpg" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
+                            <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+del+autor" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
                             <div>
                                 <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
                                 <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
@@ -345,25 +329,49 @@
                         </div>
                     </section>
                 </div>
+
+                <!-- Contenedor de contenido para Módulo 2 -->
+                <div id="module2Content" class="module-content-hidden">
+                    <section class="container-section flex flex-col items-center justify-center">
+                        <div class="flex flex-col items-center text-center w-full max-w-4xl">
+                            <h3 class="text-4xl font-bold mt-16 mb-4 text-orange-400">¡Algo grande se aproxima, muy pronto!</h3>
+                            <p class="text-lg leading-relaxed mb-6">
+                                Los fundamentos de la comunicación son la clave para cualquier estrategia de marketing o publicidad exitosa. Es lo que te permite conectar realmente con tu audiencia, construir una marca memorable y generar un impacto duradero. Prepárate para descubrir los secretos detrás de los mensajes que resuenan y las historias que venden. ¡No te pierdas esta oportunidad de dominar el arte de la comunicación!
+                            </p>
+                            <div class="countdown-container">
+                                <div class="countdown-item">
+                                    <span id="days" class="countdown-number">00</span>
+                                    <span class="countdown-label">Días</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="hours" class="countdown-number">00</span>
+                                    <span class="countdown-label">Horas</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="minutes" class="countdown-number">00</span>
+                                    <span class="countdown-label">Minutos</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="seconds" class="countdown-number">00</span>
+                                    <span class="countdown-label">Segundos</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
             
             <!-- Sección de Posts (Inicialmente oculta) -->
             <div id="postsSection" class="hidden">
                 <section class="container-section text-white mt-8">
                     <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
-                    <p class="text-center text-gray-400 mb-4">ID de usuario: <span id="userIdDisplay" class="font-bold text-white">Cargando...</span></p>
-                    <div id="createUpdateButtonContainer" class="hidden text-center mb-6">
-                        <button onclick="openModal('newUpdateModal')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-all">
-                            Crear Actualización
-                        </button>
-                    </div>
                     <div id="updatesContainer">
-                        <div class="text-center text-gray-400">Cargando actualizaciones...</div>
+                        <div class="text-center text-gray-400">No hay actualizaciones disponibles.</div>
                     </div>
                 </section>
             </div>
 
-            <!-- Footer (simulando imagen 4) -->
+            <!-- Footer -->
             <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
                 <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
                     <div class="mb-4 md:mb-0">
@@ -387,207 +395,116 @@
         </div>
     </div>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, setLogLevel, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        // Variables globales
-        let app, auth, db, userId;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        let adminId = null;
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const postModal = document.getElementById('postModal');
+            const modulesSection = document.getElementById('modulesSection');
+            const postsSection = document.getElementById('postsSection');
+            const modulesNavBtn = document.getElementById('modulesNavBtn');
+            const postsNavBtn = document.getElementById('postsNavBtn');
 
-        // Elementos del DOM
-        const postModal = document.getElementById('postModal');
-        const mainContent = document.getElementById('mainContent');
-        const modulesSection = document.getElementById('modulesSection');
-        const postsSection = document.getElementById('postsSection');
-        const modulesNavBtn = document.getElementById('modulesNavBtn');
-        const postsNavBtn = document.getElementById('postsNavBtn');
-        const adminControls = document.getElementById('adminControls');
-        const updatesContainer = document.getElementById('updatesContainer');
-        const updateForm = document.getElementById('updateForm');
-        const updateTitleInput = document.getElementById('updateTitle');
-        const updateContentInput = document.getElementById('updateContent');
-        const updateLoading = document.getElementById('updateLoading');
-        const updateMessage = document.getElementById('updateMessage');
-        const createUpdateButtonContainer = document.getElementById('createUpdateButtonContainer');
-        const moduleContent = document.getElementById('moduleContent');
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+            window.openModal = openModal;
 
-        // Configuración de logs para Firebase (útil para depuración)
-        setLogLevel('debug');
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            window.closeModal = closeModal;
 
-        window.addEventListener('load', async () => {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    console.error("Firebase config is missing or empty.");
-                    return;
+            function showSection(section) {
+                if (section === 'modules') {
+                    modulesSection.classList.remove('hidden');
+                    postsSection.classList.add('hidden');
+                    modulesNavBtn.classList.add('bg-blue-500');
+                    modulesNavBtn.classList.remove('bg-[#1a1c29]');
+                    postsNavBtn.classList.remove('bg-blue-500');
+                    postsNavBtn.classList.add('bg-[#1a1c29]');
+                } else if (section === 'posts') {
+                    postsSection.classList.remove('hidden');
+                    modulesSection.classList.add('hidden');
+                    postsNavBtn.classList.add('bg-blue-500');
+                    postsNavBtn.classList.remove('bg-[#1a1c29]');
+                    modulesNavBtn.classList.remove('bg-blue-500');
+                    modulesNavBtn.classList.add('bg-[#1a1c29]');
                 }
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                
-                // Autenticar al usuario
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
+            }
+            window.showSection = showSection;
 
-                // Esperar a que el estado de autenticación cambie
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        userId = user.uid;
-                        document.getElementById('userIdDisplay').innerText = userId;
-                        // Mostrar el contenido principal después de la autenticación
-                        mainContent.classList.remove('hidden');
-                        checkAdminStatus();
-                    } else {
-                        document.getElementById('userIdDisplay').innerText = 'No autenticado';
+            function toggleCourseContent(contentId, buttonElement) {
+                const allContentSections = document.querySelectorAll('#modulesSection > div');
+                allContentSections.forEach(section => {
+                    if (section.id.includes('Content')) {
+                        section.classList.add('module-content-hidden');
                     }
                 });
 
-            } catch (error) {
-                console.error("Error during Firebase initialization:", error);
-            }
-        });
-
-        // Función para verificar si el usuario es el administrador
-        async function checkAdminStatus() {
-            try {
-                const adminDocRef = doc(db, `artifacts/${appId}/public/data/settings`, 'admin');
-                const adminDocSnap = await getDoc(adminDocRef);
-
-                if (adminDocSnap.exists()) {
-                    adminId = adminDocSnap.data().adminId;
-                } else {
-                    // Si no existe, el primer usuario en iniciar sesión se convierte en el admin
-                    await setDoc(adminDocRef, { adminId: userId });
-                    adminId = userId;
+                const selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.classList.remove('module-content-hidden');
                 }
 
-                if (userId === adminId) {
-                    createUpdateButtonContainer.classList.remove('hidden');
-                } else {
-                    createUpdateButtonContainer.classList.add('hidden');
+                const allButtons = document.querySelectorAll('#modulesSection button.subsection-card');
+                allButtons.forEach(btn => {
+                    btn.classList.remove('active-subsection', 'bg-blue-500');
+                    btn.classList.add('bg-[#1a1c29]');
+                });
+                buttonElement.classList.add('active-subsection', 'bg-blue-500');
+                buttonElement.classList.remove('bg-[#1a1c29]');
+            }
+            window.toggleCourseContent = toggleCourseContent;
+
+            openModal('postModal');
+
+            // Lógica del contador
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            function startCountdown() {
+                const now = new Date();
+                const dayOfWeek = now.getDay();
+                let daysUntilMonday = 1 - dayOfWeek;
+                if (daysUntilMonday <= 0) {
+                    daysUntilMonday += 7;
                 }
                 
-                fetchUpdates(); // Cargar las publicaciones para todos los usuarios
-            } catch (error) {
-                console.error("Error al verificar el estado de administrador:", error);
-            }
-        }
+                const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+                nextMonday.setHours(0, 0, 0, 0); 
+                const targetDate = nextMonday.getTime();
 
-        // Función para cambiar de sección (Módulos/Posts)
-        window.showSection = (section) => {
-            if (section === 'modules') {
-                modulesSection.classList.remove('hidden');
-                postsSection.classList.add('hidden');
-                modulesNavBtn.classList.add('bg-blue-500');
-                modulesNavBtn.classList.remove('bg-[#1a1c29]');
-                postsNavBtn.classList.remove('bg-blue-500');
-                postsNavBtn.classList.add('bg-[#1a1c29]');
-            } else if (section === 'posts') {
-                postsSection.classList.remove('hidden');
-                modulesSection.classList.add('hidden');
-                postsNavBtn.classList.add('bg-blue-500');
-                postsNavBtn.classList.remove('bg-[#1a1c29]');
-                modulesNavBtn.classList.remove('bg-blue-500');
-                modulesNavBtn.classList.add('bg-[#1a1c29]');
-            }
-        };
+                const countdownInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = targetDate - now;
 
-        // Funciones para abrir y cerrar modales
-        window.openModal = (modalId) => {
-            document.getElementById(modalId).style.display = 'flex';
-        };
-
-        window.closeModal = (modalId) => {
-            document.getElementById(modalId).style.display = 'none';
-        };
-
-        // Función para mostrar/ocultar el contenido del módulo
-        window.toggleModuleContent = () => {
-            moduleContent.classList.toggle('module-content-hidden');
-        };
-
-        // Manejador del formulario de publicación
-        updateForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = updateTitleInput.value;
-            const content = updateContentInput.value;
-
-            if (!title || !content) {
-                updateMessage.innerText = 'El título y el contenido son obligatorios.';
-                updateMessage.classList.add('text-red-400');
-                updateMessage.classList.remove('text-green-400');
-                return;
-            }
-
-            updateLoading.classList.remove('hidden');
-            updateMessage.innerText = '';
-
-            try {
-                // Publicar en la colección pública
-                const updatesCollectionRef = collection(db, `artifacts/${appId}/public/data/updates`);
-                await addDoc(updatesCollectionRef, {
-                    title: title,
-                    content: content,
-                    timestamp: serverTimestamp()
-                });
-
-                updateMessage.innerText = '¡Publicación enviada con éxito!';
-                updateMessage.classList.add('text-green-400');
-                updateMessage.classList.remove('text-red-400');
-                updateForm.reset();
-                setTimeout(() => closeModal('newUpdateModal'), 1500);
-
-            } catch (e) {
-                console.error("Error al añadir documento: ", e);
-                updateMessage.innerText = 'Error al enviar la publicación. Inténtalo de nuevo.';
-                updateMessage.classList.add('text-red-400');
-                updateMessage.classList.remove('text-green-400');
-            } finally {
-                updateLoading.classList.add('hidden');
-            }
-        });
-
-        // Función para cargar las actualizaciones en tiempo real
-        function fetchUpdates() {
-            try {
-                const updatesCollectionRef = collection(db, `artifacts/${appId}/public/data/updates`);
-                onSnapshot(updatesCollectionRef, (querySnapshot) => {
-                    const updates = [];
-                    querySnapshot.forEach((doc) => {
-                        updates.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    updates.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
-
-                    updatesContainer.innerHTML = '';
-                    if (updates.length === 0) {
-                        updatesContainer.innerHTML = '<p class="text-center text-gray-400 mt-4">Aún no hay actualizaciones. ¡Sé el primero en publicar!</p>';
-                    } else {
-                        updates.forEach(update => {
-                            const date = update.timestamp ? new Date(update.timestamp.toMillis()).toLocaleString() : 'Fecha desconocida';
-                            const updateCard = document.createElement('div');
-                            updateCard.className = 'update-card';
-                            updateCard.innerHTML = `
-                                <h3 class="text-xl font-bold mb-2">${update.title}</h3>
-                                <p class="text-lg leading-relaxed">${update.content}</p>
-                                <p class="update-timestamp">Publicado el: ${date}</p>
-                            `;
-                            updatesContainer.appendChild(updateCard);
-                        });
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        daysEl.innerHTML = '00';
+                        hoursEl.innerHTML = '00';
+                        minutesEl.innerHTML = '00';
+                        secondsEl.innerHTML = '00';
+                        return;
                     }
-                });
-            } catch (error) {
-                console.error("Error al obtener las actualizaciones:", error);
-                updatesContainer.innerHTML = `<p class="text-center text-red-400 mt-4">Error al cargar las actualizaciones. Por favor, recarga la página.</p>`;
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    daysEl.innerHTML = days.toString().padStart(2, '0');
+                    hoursEl.innerHTML = hours.toString().padStart(2, '0');
+                    minutesEl.innerHTML = minutes.toString().padStart(2, '0');
+                    secondsEl.innerHTML = seconds.toString().padStart(2, '0');
+
+                }, 1000);
             }
-        }
+            
+            // Iniciar el contador al cargar el DOM
+            startCountdown();
+
+        });
     </script>
 </body>
 </html>

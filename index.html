@@ -177,248 +177,13 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
+        .post-card {
+            background-color: #1a1c29;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
-    <script type="module">
-        // Importa las librerías necesarias de Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-        import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-        setLogLevel('debug');
-        
-        // Variables globales para la configuración de Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Inicializa Firebase y sus servicios
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        
-        // Contraseña secreta para el acceso de creador
-        const creatorPassword = "mi_contraseña_secreta";
-
-        let userId = null;
-        
-        // Escucha el estado de autenticación para saber si hay un usuario
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-                loadPosts(); // Carga los posts una vez que el usuario está autenticado
-            } else {
-                try {
-                    // Intenta iniciar sesión con el token personalizado
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        // Si no hay token, inicia sesión anónimamente
-                        await signInAnonymously(auth);
-                    }
-                } catch (error) {
-                    console.error("Error signing in:", error);
-                }
-            }
-        });
-
-        function toggleCreatorForm() {
-            const passwordForm = document.getElementById('passwordCheckForm');
-            passwordForm.classList.toggle('hidden');
-        }
-        window.toggleCreatorForm = toggleCreatorForm;
-
-        function checkCreatorPassword() {
-            const passwordInput = document.getElementById('creatorPasswordInput');
-            const errorMessage = document.getElementById('passwordErrorMessage');
-            if (passwordInput.value === creatorPassword) {
-                document.getElementById('postForm').classList.remove('hidden');
-                document.getElementById('passwordCheckForm').classList.add('hidden');
-                errorMessage.classList.add('hidden');
-            } else {
-                errorMessage.classList.remove('hidden');
-            }
-        }
-        window.checkCreatorPassword = checkCreatorPassword;
-
-        // Función para publicar un post en Firestore
-        async function publishPost(title, content) {
-            if (!title || !content) {
-                showCustomAlert("Por favor, completa todos los campos.");
-                return;
-            }
-            try {
-                // Guarda el post en la colección pública de la aplicación
-                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
-                await addDoc(postsCollectionRef, {
-                    title: title,
-                    content: content,
-                    authorId: userId,
-                    createdAt: serverTimestamp() // Usa la marca de tiempo del servidor
-                });
-                console.log("Post publicado con éxito");
-                document.getElementById('postTitle').value = '';
-                document.getElementById('postContent').value = '';
-                showCustomAlert("¡Publicación enviada con éxito!");
-            } catch (e) {
-                console.error("Error al añadir la publicación: ", e);
-                showCustomAlert("Error al enviar la publicación. Inténtalo de nuevo.");
-            }
-        }
-        window.publishPost = publishPost;
-        
-        function showCustomAlert(message) {
-            const modal = document.getElementById('customAlertModal');
-            document.getElementById('customAlertMessage').innerText = message;
-            modal.style.display = 'flex';
-        }
-        window.showCustomAlert = showCustomAlert;
-
-        // Función para cargar los posts desde Firestore
-        function loadPosts() {
-            try {
-                // Escucha los cambios en la colección de posts en tiempo real
-                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
-                
-                onSnapshot(postsCollectionRef, (snapshot) => {
-                    const updatesContainer = document.getElementById('updatesContainer');
-                    updatesContainer.innerHTML = '';
-                    if (snapshot.empty) {
-                        updatesContainer.innerHTML = `<p class="text-center text-gray-400 mt-4">Aún no hay actualizaciones. ¡Sé el primero en publicar!</p>`;
-                    } else {
-                        const posts = [];
-                        snapshot.forEach(doc => {
-                            posts.push(doc.data());
-                        });
-
-                        // Ordena los posts por fecha de creación (los más recientes primero)
-                        posts.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-
-                        posts.forEach(post => {
-                            const postElement = document.createElement('div');
-                            postElement.className = 'bg-[#1a1c29] p-6 rounded-lg shadow-md mb-6';
-                            
-                            const date = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : 'Fecha desconocida';
-
-                            postElement.innerHTML = `
-                                <h3 class="text-2xl font-bold mb-2 text-blue-400">${post.title}</h3>
-                                <p class="text-lg leading-relaxed text-gray-200">${post.content}</p>
-                                <p class="text-sm mt-4 text-gray-500">Publicado el: ${date}</p>
-                            `;
-                            updatesContainer.appendChild(postElement);
-                        });
-                    }
-                });
-            } catch (e) {
-                console.error("Error al cargar las publicaciones: ", e);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const modulesSection = document.getElementById('modulesSection');
-            const postsSection = document.getElementById('postsSection');
-            const modulesNavBtn = document.getElementById('modulesNavBtn');
-            const postsNavBtn = document.getElementById('postsNavBtn');
-
-            function openModal(modalId) {
-                document.getElementById(modalId).style.display = 'flex';
-            }
-            window.openModal = openModal;
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).style.display = 'none';
-            }
-            window.closeModal = closeModal;
-
-            function showSection(section) {
-                if (section === 'modules') {
-                    modulesSection.classList.remove('hidden');
-                    postsSection.classList.add('hidden');
-                    modulesNavBtn.classList.add('bg-blue-500');
-                    modulesNavBtn.classList.remove('bg-[#1a1c29]');
-                    postsNavBtn.classList.remove('bg-blue-500');
-                    postsNavBtn.classList.add('bg-[#1a1c29]');
-                } else if (section === 'posts') {
-                    postsSection.classList.remove('hidden');
-                    modulesSection.classList.add('hidden');
-                    postsNavBtn.classList.add('bg-blue-500');
-                    postsNavBtn.classList.remove('bg-[#1a1c29]');
-                    modulesNavBtn.classList.remove('bg-blue-500');
-                    modulesNavBtn.classList.add('bg-[#1a1c29]');
-                }
-            }
-            window.showSection = showSection;
-
-            function toggleCourseContent(contentId, buttonElement) {
-                const allContentSections = document.querySelectorAll('#modulesSection > div');
-                allContentSections.forEach(section => {
-                    if (section.id.includes('Content')) {
-                        section.classList.add('module-content-hidden');
-                    }
-                });
-
-                const selectedContent = document.getElementById(contentId);
-                if (selectedContent) {
-                    selectedContent.classList.remove('module-content-hidden');
-                }
-
-                const allButtons = document.querySelectorAll('#modulesSection button.subsection-card');
-                allButtons.forEach(btn => {
-                    btn.classList.remove('active-subsection', 'bg-blue-500');
-                    btn.classList.add('bg-[#1a1c29]');
-                });
-                buttonElement.classList.add('active-subsection', 'bg-blue-500');
-                buttonElement.classList.remove('bg-[#1a1c29]');
-            }
-            window.toggleCourseContent = toggleCourseContent;
-
-            openModal('postModal');
-
-            const daysEl = document.getElementById('days');
-            const hoursEl = document.getElementById('hours');
-            const minutesEl = document.getElementById('minutes');
-            const secondsEl = document.getElementById('seconds');
-
-            function startCountdown() {
-                const now = new Date();
-                const dayOfWeek = now.getDay();
-                let daysUntilMonday = 1 - dayOfWeek;
-                if (daysUntilMonday <= 0) {
-                    daysUntilMonday += 7;
-                }
-                
-                const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
-                nextMonday.setHours(0, 0, 0, 0); 
-                const targetDate = nextMonday.getTime();
-
-                const countdownInterval = setInterval(() => {
-                    const now = new Date().getTime();
-                    const distance = targetDate - now;
-
-                    if (distance < 0) {
-                        clearInterval(countdownInterval);
-                        daysEl.innerHTML = '00';
-                        hoursEl.innerHTML = '00';
-                        minutesEl.innerHTML = '00';
-                        secondsEl.innerHTML = '00';
-                        return;
-                    }
-
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    daysEl.innerHTML = days.toString().padStart(2, '0');
-                    hoursEl.innerHTML = hours.toString().padStart(2, '0');
-                    minutesEl.innerHTML = minutes.toString().padStart(2, '0');
-                    secondsEl.innerHTML = seconds.toString().padStart(2, '0');
-
-                }, 1000);
-            }
-            
-            startCountdown();
-        });
-    </script>
 </head>
 <body class="bg-[#12141f]">
 
@@ -438,29 +203,25 @@
                 <br>
                 Suscríbete ahora y forma parte del 1% que decide crecer.
             </p>
-
             <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
             <div class="mb-6">
-                <img src="image_32c8af.jpg" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
                 </p>
             </div>
-            
             <div class="mb-6">
-                <img src="image_32ccab.jpg" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
                 </p>
             </div>
-            
             <div class="mb-6">
-                <img src="image_32ccc5.jpg" alt="Captura de pantalla de la cuenta de Instagram con más de 1800 seguidores" class="post-image mx-auto">
+                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+de+1800+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
                 </p>
             </div>
-
             <p class="text-lg leading-relaxed mt-8">
                 Es por eso, colega, que después de ver todo este crecimiento quise dar un paso más grande. Dejé de subir videos durante 1 mes para tomar una decisión importante: la mejor forma de avanzar es ayudando a más personas 🚀.
                 Por eso creé este programa 100% gratuito, donde aprenderemos juntos sobre marketing y publicidad, con E-Books gratis 📚 y ejercicios prácticos que te ayudarán a cumplir tus objetivos.
@@ -472,16 +233,56 @@
         </div>
     </div>
 
+    <!-- Modal para crear post -->
+    <div id="createPostModal" class="modal">
+        <div class="modal-content text-left">
+            <button class="close-button" onclick="closeModal('createPostModal')">×</button>
+            <h2 class="text-3xl font-bold mb-6 text-center">Crear Nuevo Post</h2>
+            <form id="createPostForm" class="space-y-4">
+                <div>
+                    <label for="postTitle" class="block text-gray-400 mb-2">Título del Post:</label>
+                    <input type="text" id="postTitle" name="postTitle" class="w-full p-3 rounded-md bg-[#2d3142] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe un título inspirador..." required>
+                </div>
+                <div>
+                    <label for="postContent" class="block text-gray-400 mb-2">Contenido del Post:</label>
+                    <textarea id="postContent" name="postContent" rows="6" class="w-full p-3 rounded-md bg-[#2d3142] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Comparte tus ideas aquí..." required></textarea>
+                </div>
+                <div>
+                    <label for="postImageUrl" class="block text-gray-400 mb-2">URL de la Imagen (opcional):</label>
+                    <input type="url" id="postImageUrl" name="postImageUrl" class="w-full p-3 rounded-md bg-[#2d3142] border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://ejemplo.com/imagen.jpg">
+                </div>
+                <div class="text-center mt-6">
+                    <button type="submit" class="glow-button text-white font-bold py-3 px-8 rounded-lg">
+                        Publicar Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Permiso Denegado -->
+    <div id="permissionDeniedModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('permissionDeniedModal')">×</button>
+            <h2 class="text-3xl font-bold mb-4">Acceso Denegado</h2>
+            <p class="text-lg leading-relaxed mb-6">
+                No tienes permiso para crear posts. Si eres el administrador, por favor actualiza el código con tu ID de usuario.
+            </p>
+            <p class="text-sm text-gray-400">Tu ID de usuario es: <span id="currentUserId">Cargando...</span></p>
+        </div>
+    </div>
+
+
     <!-- Contenido Principal de la Página -->
     <div id="mainContent">
-        
+    
         <!-- Barra de Navegación -->
         <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
             <div class="flex-1 flex justify-center space-x-4">
-                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-500 transition-colors">
+                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors">
                     Módulos
                 </button>
-                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-600 transition-colors">
+                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-500 transition-colors">
                     Posts
                 </button>
             </div>
@@ -500,10 +301,10 @@
                         <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
                         <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
                         <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection bg-blue-500">
+                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection">
                                 <span>1 Cultura Digital: Marketing y Publicidad</span>
                             </button>
-                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline bg-[#1a1c29]">
+                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline">
                                 <span>2. Fundamentos de la comunicación</span>
                             </button>
                         </div>
@@ -525,6 +326,7 @@
                                 </a>
                             </div>
                             <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
+                                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+del+libro+Cultura+Digital" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
                                 <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
                             </div>
                         </div>
@@ -560,7 +362,7 @@
                         </p>
                         <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
                         <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
-                            
+                            <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+del+autor" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
                             <div>
                                 <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
                                 <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
@@ -606,46 +408,18 @@
             </div>
             
             <!-- Sección de Posts (Inicialmente oculta) -->
-            <div id="postsSection" class="hidden">
-                <section class="container-section text-white mt-8">
-                    <div class="flex items-center justify-center mb-8">
-                        <h2 class="text-3xl md:text-4xl font-bold">Últimas Actualizaciones</h2>
-                        <button onclick="toggleCreatorForm()" class="ml-4 p-2 rounded-full hover:bg-gray-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit text-gray-400 hover:text-white transition-colors">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                        </button>
+            <div id="postsSection" class="hidden container-section">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="text-sm text-gray-400">
+                        <p>Tu ID de usuario es: <span id="currentUserIdDisplay" class="font-mono text-gray-300">Cargando...</span></p>
                     </div>
-                    
-                    <!-- Formulario para verificar la contraseña del creador -->
-                    <div id="passwordCheckForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
-                        <h3 class="text-xl font-bold mb-4">Acceso de Creador</h3>
-                        <input type="password" id="creatorPasswordInput" placeholder="Ingresa tu contraseña de creador" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500">
-                        <button onclick="checkCreatorPassword()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Soy el Creador</button>
-                        <p id="passwordErrorMessage" class="hidden text-sm text-red-500 mt-2 text-center">Contraseña incorrecta. Inténtalo de nuevo.</p>
-                    </div>
-
-                    <!-- Formulario de publicación visible solo para el creador, inicialmente oculto -->
-                    <div id="postForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
-                        <h3 class="text-xl font-bold mb-4">Crear nueva publicación</h3>
-                        <input type="text" id="postTitle" placeholder="Título de la publicación" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500">
-                        <textarea id="postContent" placeholder="Contenido de la publicación" rows="5" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500"></textarea>
-                        <button onclick="publishPost(document.getElementById('postTitle').value, document.getElementById('postContent').value)" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Publicar</button>
-                    </div>
-
-                    <div id="updatesContainer">
-                        <div class="text-center text-gray-400">Cargando publicaciones...</div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Modal de alerta personalizado -->
-            <div id="customAlertModal" class="modal">
-                <div class="modal-content text-center">
-                    <button class="close-button" onclick="closeModal('customAlertModal')">×</button>
-                    <p id="customAlertMessage" class="text-xl font-semibold"></p>
-                    <button onclick="closeModal('customAlertModal')" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Cerrar</button>
+                    <button onclick="openCreatePostModal()" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg">
+                        Crear Post
+                    </button>
+                </div>
+                <div id="postsContainer">
+                    <div class="text-center text-gray-400">Cargando posts...</div>
                 </div>
             </div>
 
@@ -672,5 +446,250 @@
             </footer>
         </div>
     </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variables de Firebase proporcionadas por el entorno
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Pega tu ID de usuario aquí para habilitar la creación de posts
+        const adminId = 'TU_ID_DE_USUARIO_AQUI';
+
+        let db, auth, userId;
+        let isAuthReady = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const postModal = document.getElementById('postModal');
+            const createPostModal = document.getElementById('createPostModal');
+            const permissionDeniedModal = document.getElementById('permissionDeniedModal');
+            const modulesSection = document.getElementById('modulesSection');
+            const postsSection = document.getElementById('postsSection');
+            const modulesNavBtn = document.getElementById('modulesNavBtn');
+            const postsNavBtn = document.getElementById('postsNavBtn');
+            const postsContainer = document.getElementById('postsContainer');
+            const createPostForm = document.getElementById('createPostForm');
+            const currentUserIdDisplay = document.getElementById('currentUserIdDisplay');
+            const permissionDeniedUserIdDisplay = document.getElementById('currentUserId');
+            
+            // Inicializar Firebase
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                console.log("Firebase inicializado.");
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+                return;
+            }
+            
+            // Manejar autenticación
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    isAuthReady = true;
+                    console.log("Usuario autenticado. UID:", userId);
+                    currentUserIdDisplay.textContent = userId;
+                    permissionDeniedUserIdDisplay.textContent = userId;
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Error al autenticar:", error);
+                    }
+                }
+            });
+
+            // Lógica para mostrar y ocultar modales
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'flex';
+            }
+            window.openModal = openModal;
+
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+            window.closeModal = closeModal;
+
+            function openCreatePostModal() {
+                if (userId === adminId) {
+                    openModal('createPostModal');
+                } else {
+                    openModal('permissionDeniedModal');
+                }
+            }
+            window.openCreatePostModal = openCreatePostModal;
+
+            
+            // Función para mostrar la sección correcta
+            function showSection(section) {
+                if (section === 'modules') {
+                    modulesSection.classList.remove('hidden');
+                    postsSection.classList.add('hidden');
+                    modulesNavBtn.classList.add('bg-blue-500');
+                    modulesNavBtn.classList.remove('bg-[#1a1c29]');
+                    postsNavBtn.classList.remove('bg-blue-500');
+                    postsNavBtn.classList.add('bg-[#1a1c29]');
+                } else if (section === 'posts') {
+                    postsSection.classList.remove('hidden');
+                    modulesSection.classList.add('hidden');
+                    postsNavBtn.classList.add('bg-blue-500');
+                    postsNavBtn.classList.remove('bg-[#1a1c29]');
+                    modulesNavBtn.classList.remove('bg-blue-500');
+                    modulesNavBtn.classList.add('bg-[#1a1c29]');
+                    loadPosts();
+                }
+            }
+            window.showSection = showSection;
+            
+            // Función para alternar el contenido de los módulos
+            function toggleCourseContent(contentId, buttonElement) {
+                const allContentSections = document.querySelectorAll('#modulesSection > div');
+                allContentSections.forEach(section => {
+                    if (section.id.includes('Content')) {
+                        section.classList.add('module-content-hidden');
+                    }
+                });
+
+                const selectedContent = document.getElementById(contentId);
+                if (selectedContent) {
+                    selectedContent.classList.remove('module-content-hidden');
+                }
+
+                const allButtons = document.querySelectorAll('#modulesSection button.subsection-card');
+                allButtons.forEach(btn => {
+                    btn.classList.remove('active-subsection', 'bg-blue-500');
+                    btn.classList.add('bg-[#1a1c29]');
+                });
+                buttonElement.classList.add('active-subsection', 'bg-blue-500');
+                buttonElement.classList.remove('bg-[#1a1c29]');
+            }
+            window.toggleCourseContent = toggleCourseContent;
+
+            openModal('postModal');
+
+            // Lógica del contador
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            function startCountdown() {
+                const now = new Date();
+                const dayOfWeek = now.getDay();
+                let daysUntilMonday = 1 - dayOfWeek;
+                if (daysUntilMonday <= 0) {
+                    daysUntilMonday += 7;
+                }
+                
+                const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+                nextMonday.setHours(0, 0, 0, 0);  
+                const targetDate = nextMonday.getTime();
+
+                const countdownInterval = setInterval(() => {
+                    const now = new Date().getTime();
+                    const distance = targetDate - now;
+
+                    if (distance < 0) {
+                        clearInterval(countdownInterval);
+                        daysEl.innerHTML = '00';
+                        hoursEl.innerHTML = '00';
+                        minutesEl.innerHTML = '00';
+                        secondsEl.innerHTML = '00';
+                        return;
+                    }
+
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    daysEl.innerHTML = days.toString().padStart(2, '0');
+                    hoursEl.innerHTML = hours.toString().padStart(2, '0');
+                    minutesEl.innerHTML = minutes.toString().padStart(2, '0');
+                    secondsEl.innerHTML = seconds.toString().padStart(2, '0');
+
+                }, 1000);
+            }
+            
+            startCountdown();
+
+            // Lógica para Firestore
+            createPostForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!isAuthReady) {
+                    console.error("Autenticación no lista. Intente de nuevo.");
+                    return;
+                }
+                
+                // Verificar si el usuario actual es el administrador
+                if (userId !== adminId) {
+                    openModal('permissionDeniedModal');
+                    return;
+                }
+
+                const title = document.getElementById('postTitle').value;
+                const content = document.getElementById('postContent').value;
+                const imageUrl = document.getElementById('postImageUrl').value;
+                const postData = {
+                    title,
+                    content,
+                    imageUrl,
+                    userId,
+                    createdAt: serverTimestamp()
+                };
+
+                try {
+                    const postsRef = collection(db, `artifacts/${appId}/public/data/posts`);
+                    await addDoc(postsRef, postData);
+                    closeModal('createPostModal');
+                    createPostForm.reset();
+                    console.log("Post agregado a Firestore.");
+                } catch (error) {
+                    console.error("Error al crear el post:", error);
+                }
+            });
+
+            function loadPosts() {
+                if (!isAuthReady) {
+                    postsContainer.innerHTML = '<div class="text-center text-gray-400">Autenticando, por favor espere...</div>';
+                    return;
+                }
+                
+                const postsRef = collection(db, `artifacts/${appId}/public/data/posts`);
+                onSnapshot(query(postsRef), (snapshot) => {
+                    postsContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        postsContainer.innerHTML = '<div class="text-center text-gray-400">No hay actualizaciones disponibles.</div>';
+                        return;
+                    }
+                    snapshot.forEach((doc) => {
+                        const post = doc.data();
+                        const postElement = document.createElement('div');
+                        postElement.classList.add('post-card', 'fade-in');
+                        postElement.innerHTML = `
+                            <h3 class="text-2xl font-bold mb-2">${post.title}</h3>
+                            <p class="text-sm text-gray-400 mb-4">Por Usuario: <span class="font-mono text-gray-300">${post.userId}</span></p>
+                            <p class="text-lg leading-relaxed mb-4">${post.content}</p>
+                            ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagen del post" class="post-image mx-auto my-4">` : ''}
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                }, (error) => {
+                    console.error("Error al cargar los posts:", error);
+                    postsContainer.innerHTML = '<div class="text-center text-red-400">Error al cargar las publicaciones.</div>';
+                });
+            }
+
+        });
+    </script>
 </body>
 </html>

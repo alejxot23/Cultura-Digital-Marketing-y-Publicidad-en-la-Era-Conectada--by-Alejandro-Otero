@@ -260,19 +260,6 @@
         </div>
     </div>
 
-    <!-- Modal de Permiso Denegado -->
-    <div id="permissionDeniedModal" class="modal">
-        <div class="modal-content">
-            <button class="close-button" onclick="closeModal('permissionDeniedModal')">×</button>
-            <h2 class="text-3xl font-bold mb-4">Acceso Denegado</h2>
-            <p class="text-lg leading-relaxed mb-6">
-                No tienes permiso para crear posts. Si eres el administrador, por favor actualiza el código con tu ID de usuario.
-            </p>
-            <p class="text-sm text-gray-400">Tu ID de usuario es: <span id="currentUserId">Cargando...</span></p>
-        </div>
-    </div>
-
-
     <!-- Contenido Principal de la Página -->
     <div id="mainContent">
     
@@ -410,16 +397,13 @@
             <!-- Sección de Posts (Inicialmente oculta) -->
             <div id="postsSection" class="hidden container-section">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
-                <div class="flex justify-between items-center mb-6">
-                    <div class="text-sm text-gray-400">
-                        <p>Tu ID de usuario es: <span id="currentUserIdDisplay" class="font-mono text-gray-300">Cargando...</span></p>
-                    </div>
-                    <button onclick="openCreatePostModal()" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg">
+                <div class="flex justify-end items-center mb-6">
+                    <button onclick="openModal('createPostModal')" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg">
                         Crear Post
                     </button>
                 </div>
                 <div id="postsContainer">
-                    <div class="text-center text-gray-400">Cargando posts...</div>
+                    <div class="text-center text-gray-400">No hay publicaciones guardadas en tu navegador. ¡Crea una para comenzar!</div>
                 </div>
             </div>
 
@@ -447,66 +431,16 @@
         </div>
     </div>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Variables de Firebase proporcionadas por el entorno
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // Pega tu ID de usuario aquí para habilitar la creación de posts
-        const adminId = 'TU_ID_DE_USUARIO_AQUI';
-
-        let db, auth, userId;
-        let isAuthReady = false;
-
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const postModal = document.getElementById('postModal');
             const createPostModal = document.getElementById('createPostModal');
-            const permissionDeniedModal = document.getElementById('permissionDeniedModal');
             const modulesSection = document.getElementById('modulesSection');
             const postsSection = document.getElementById('postsSection');
             const modulesNavBtn = document.getElementById('modulesNavBtn');
             const postsNavBtn = document.getElementById('postsNavBtn');
             const postsContainer = document.getElementById('postsContainer');
             const createPostForm = document.getElementById('createPostForm');
-            const currentUserIdDisplay = document.getElementById('currentUserIdDisplay');
-            const permissionDeniedUserIdDisplay = document.getElementById('currentUserId');
-            
-            // Inicializar Firebase
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                console.log("Firebase inicializado.");
-            } catch (error) {
-                console.error("Error al inicializar Firebase:", error);
-                return;
-            }
-            
-            // Manejar autenticación
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    isAuthReady = true;
-                    console.log("Usuario autenticado. UID:", userId);
-                    currentUserIdDisplay.textContent = userId;
-                    permissionDeniedUserIdDisplay.textContent = userId;
-                } else {
-                    try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Error al autenticar:", error);
-                    }
-                }
-            });
 
             // Lógica para mostrar y ocultar modales
             function openModal(modalId) {
@@ -519,16 +453,6 @@
             }
             window.closeModal = closeModal;
 
-            function openCreatePostModal() {
-                if (userId === adminId) {
-                    openModal('createPostModal');
-                } else {
-                    openModal('permissionDeniedModal');
-                }
-            }
-            window.openCreatePostModal = openCreatePostModal;
-
-            
             // Función para mostrar la sección correcta
             function showSection(section) {
                 if (section === 'modules') {
@@ -622,73 +546,54 @@
             
             startCountdown();
 
-            // Lógica para Firestore
+            // Lógica para LocalStorage
             createPostForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                if (!isAuthReady) {
-                    console.error("Autenticación no lista. Intente de nuevo.");
-                    return;
-                }
-                
-                // Verificar si el usuario actual es el administrador
-                if (userId !== adminId) {
-                    openModal('permissionDeniedModal');
-                    return;
-                }
 
                 const title = document.getElementById('postTitle').value;
                 const content = document.getElementById('postContent').value;
                 const imageUrl = document.getElementById('postImageUrl').value;
+                
                 const postData = {
+                    id: Date.now(), // Un ID único para cada post
                     title,
                     content,
                     imageUrl,
-                    userId,
-                    createdAt: serverTimestamp()
+                    createdAt: new Date().toISOString()
                 };
 
-                try {
-                    const postsRef = collection(db, `artifacts/${appId}/public/data/posts`);
-                    await addDoc(postsRef, postData);
-                    closeModal('createPostModal');
-                    createPostForm.reset();
-                    console.log("Post agregado a Firestore.");
-                } catch (error) {
-                    console.error("Error al crear el post:", error);
-                }
+                // Obtener posts existentes o inicializar un array vacío
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                posts.unshift(postData); // Agregar el nuevo post al inicio
+                localStorage.setItem('posts', JSON.stringify(posts));
+
+                closeModal('createPostModal');
+                createPostForm.reset();
+                loadPosts(); // Recargar los posts en la UI
             });
 
             function loadPosts() {
-                if (!isAuthReady) {
-                    postsContainer.innerHTML = '<div class="text-center text-gray-400">Autenticando, por favor espere...</div>';
+                const posts = JSON.parse(localStorage.getItem('posts')) || [];
+                postsContainer.innerHTML = '';
+
+                if (posts.length === 0) {
+                    postsContainer.innerHTML = '<div class="text-center text-gray-400">No hay publicaciones guardadas en tu navegador. ¡Crea una para comenzar!</div>';
                     return;
                 }
                 
-                const postsRef = collection(db, `artifacts/${appId}/public/data/posts`);
-                onSnapshot(query(postsRef), (snapshot) => {
-                    postsContainer.innerHTML = '';
-                    if (snapshot.empty) {
-                        postsContainer.innerHTML = '<div class="text-center text-gray-400">No hay actualizaciones disponibles.</div>';
-                        return;
-                    }
-                    snapshot.forEach((doc) => {
-                        const post = doc.data();
-                        const postElement = document.createElement('div');
-                        postElement.classList.add('post-card', 'fade-in');
-                        postElement.innerHTML = `
-                            <h3 class="text-2xl font-bold mb-2">${post.title}</h3>
-                            <p class="text-sm text-gray-400 mb-4">Por Usuario: <span class="font-mono text-gray-300">${post.userId}</span></p>
-                            <p class="text-lg leading-relaxed mb-4">${post.content}</p>
-                            ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagen del post" class="post-image mx-auto my-4">` : ''}
-                        `;
-                        postsContainer.appendChild(postElement);
-                    });
-                }, (error) => {
-                    console.error("Error al cargar los posts:", error);
-                    postsContainer.innerHTML = '<div class="text-center text-red-400">Error al cargar las publicaciones.</div>';
+                posts.forEach((post) => {
+                    const postElement = document.createElement('div');
+                    postElement.classList.add('post-card', 'fade-in');
+                    postElement.innerHTML = `
+                        <h3 class="text-2xl font-bold mb-2">${post.title}</h3>
+                        <p class="text-lg leading-relaxed mb-4">${post.content}</p>
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagen del post" class="post-image mx-auto my-4">` : ''}
+                    `;
+                    postsContainer.appendChild(postElement);
                 });
             }
-
+            
+            loadPosts(); // Cargar posts al iniciar
         });
     </script>
 </body>

@@ -179,40 +179,41 @@
         }
     </style>
     <script type="module">
+        // Importa las librerías necesarias de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
         setLogLevel('debug');
         
+        // Variables globales para la configuración de Firebase
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        // Inicializa Firebase y sus servicios
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // Aquí es donde tienes que pegar tu ID de usuario de tu PC.
-        // La ID actual de creador es 'Alejandro_1', pero para que funcione en tu PC, debes reemplazarla con tu nueva ID.
-        // Ejemplo: const creatorUserId = "tu_nueva_id_unica";
-        const creatorUserId = "Alejandro_1";
+        // Contraseña secreta para el acceso de creador
+        const creatorPassword = "mi_contraseña_secreta";
 
         let userId = null;
+        
+        // Escucha el estado de autenticación para saber si hay un usuario
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
                 document.getElementById('userIdDisplay').innerText = `Tu ID: ${userId}`;
-                if (userId === creatorUserId) {
-                    document.getElementById('postForm').classList.remove('hidden');
-                }
-                // Call loadPosts here, inside the auth state change listener
-                loadPosts();
+                loadPosts(); // Carga los posts una vez que el usuario está autenticado
             } else {
                 try {
+                    // Intenta iniciar sesión con el token personalizado
                     if (initialAuthToken) {
                         await signInWithCustomToken(auth, initialAuthToken);
                     } else {
+                        // Si no hay token, inicia sesión anónimamente
                         await signInAnonymously(auth);
                     }
                 } catch (error) {
@@ -221,19 +222,39 @@
             }
         });
 
+        function toggleCreatorForm() {
+            const passwordForm = document.getElementById('passwordCheckForm');
+            passwordForm.classList.toggle('hidden');
+        }
+        window.toggleCreatorForm = toggleCreatorForm;
+
+        function checkCreatorPassword() {
+            const passwordInput = document.getElementById('creatorPasswordInput');
+            const errorMessage = document.getElementById('passwordErrorMessage');
+            if (passwordInput.value === creatorPassword) {
+                document.getElementById('postForm').classList.remove('hidden');
+                document.getElementById('passwordCheckForm').classList.add('hidden');
+                errorMessage.classList.add('hidden');
+            } else {
+                errorMessage.classList.remove('hidden');
+            }
+        }
+        window.checkCreatorPassword = checkCreatorPassword;
+
+        // Función para publicar un post en Firestore
         async function publishPost(title, content) {
             if (!title || !content) {
                 showCustomAlert("Por favor, completa todos los campos.");
                 return;
             }
             try {
-                // Ruta corregida: se usa la ruta pública recomendada para la aplicación
+                // Guarda el post en la colección pública de la aplicación
                 const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
                 await addDoc(postsCollectionRef, {
                     title: title,
                     content: content,
                     authorId: userId,
-                    createdAt: serverTimestamp()
+                    createdAt: serverTimestamp() // Usa la marca de tiempo del servidor
                 });
                 console.log("Post publicado con éxito");
                 document.getElementById('postTitle').value = '';
@@ -253,10 +274,10 @@
         }
         window.showCustomAlert = showCustomAlert;
 
-
+        // Función para cargar los posts desde Firestore
         function loadPosts() {
             try {
-                // Ruta corregida: se usa la misma ruta para leer los datos públicos
+                // Escucha los cambios en la colección de posts en tiempo real
                 const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
                 
                 onSnapshot(postsCollectionRef, (snapshot) => {
@@ -270,6 +291,7 @@
                             posts.push(doc.data());
                         });
 
+                        // Ordena los posts por fecha de creación (los más recientes primero)
                         posts.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
                         posts.forEach(post => {
@@ -585,10 +607,26 @@
             <!-- Sección de Posts (Inicialmente visible) -->
             <div id="postsSection">
                 <section class="container-section text-white mt-8">
-                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
+                    <div class="flex items-center justify-center mb-8">
+                        <h2 class="text-3xl md:text-4xl font-bold">Últimas Actualizaciones</h2>
+                        <button onclick="toggleCreatorForm()" class="ml-4 p-2 rounded-full hover:bg-gray-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit text-gray-400 hover:text-white transition-colors">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                    </div>
                     <p class="text-center text-gray-500 mb-6" id="userIdDisplay">Tu ID: </p>
+                    
+                    <!-- Formulario para verificar la contraseña del creador -->
+                    <div id="passwordCheckForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
+                        <h3 class="text-xl font-bold mb-4">Acceso de Creador</h3>
+                        <input type="password" id="creatorPasswordInput" placeholder="Ingresa tu contraseña de creador" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500">
+                        <button onclick="checkCreatorPassword()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Soy el Creador</button>
+                        <p id="passwordErrorMessage" class="hidden text-sm text-red-500 mt-2 text-center">Contraseña incorrecta. Inténtalo de nuevo.</p>
+                    </div>
 
-                    <!-- Formulario de publicación visible solo para el creador -->
+                    <!-- Formulario de publicación visible solo para el creador, inicialmente oculto -->
                     <div id="postForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
                         <h3 class="text-xl font-bold mb-4">Crear nueva publicación</h3>
                         <input type="text" id="postTitle" placeholder="Título de la publicación" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500">

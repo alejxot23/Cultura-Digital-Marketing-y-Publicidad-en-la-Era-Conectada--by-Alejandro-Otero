@@ -178,224 +178,120 @@
             letter-spacing: 1px;
         }
     </style>
-</head>
-<body class="bg-[#12141f]">
-
-    <!-- Modal de Bienvenida -->
-    <div id="postModal" class="modal">
-        <div class="modal-content">
-            <button class="close-button" onclick="closeModal('postModal')">×</button>
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Bienvenida 👋🏻</h2>
-            <p class="text-lg leading-relaxed mb-6">
-                Si estás leyendo esto, significa que quieres aprender marketing y publicidad. Y seguramente estás aquí por una de dos razones:
-                <br><br>
-                1️⃣ Piensas que soy un vendehúmos (déjame decirte que no, dejo que mi cuenta @pxwer.up hable por sí sola).
-                <br>
-                2️⃣ Quieres aprender marketing y publicidad desde cero, pero no hacerlo solo.
-                <br><br>
-                Por eso creé este programa gratuito: cada semana compartiré un e-book práctico, como si fuera la universidad… pero mejor. 🚀
-                <br>
-                Suscríbete ahora y forma parte del 1% que decide crecer.
-            </p>
-            <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
-            <div class="mb-6">
-                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
-                <p class="text-sm mt-2 text-gray-400">
-                    Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
-                </p>
-            </div>
-            <div class="mb-6">
-                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
-                <p class="text-sm mt-2 text-gray-400">
-                    Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
-                </p>
-            </div>
-            <div class="mb-6">
-                <img src="https://placehold.co/600x400/1a1c29/e2e8f0?text=Imagen+de+la+cuenta+de+Instagram+con+mas+de+1800+seguidores" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
-                <p class="text-sm mt-2 text-gray-400">
-                    Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
-                </p>
-            </div>
-            <p class="text-lg leading-relaxed mt-8">
-                Es por eso, colega, que después de ver todo este crecimiento quise dar un paso más grande. Dejé de subir videos durante 1 mes para tomar una decisión importante: la mejor forma de avanzar es ayudando a más personas 🚀.
-                Por eso creé este programa 100% gratuito, donde aprenderemos juntos sobre marketing y publicidad, con E-Books gratis 📚 y ejercicios prácticos que te ayudarán a cumplir tus objetivos.
-                La idea es simple: yo te comparto la información y el valor que he estado aprendiendo, y tú lo aplicas en tu proyecto o negocio 💡.
-            </p>
-            <p class="text-lg font-bold mt-4 leading-relaxed text-red-400">
-                Pero ojo 👀, no te recomiendo que te suscribas si solo quieres mirar desde la barrera. Este programa es para quienes quieren pasar de ser espectadores a creadores.
-            </p>
-        </div>
-    </div>
-
-    <!-- Contenido Principal de la Página -->
-    <div id="mainContent">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAuth, signInWithCustomToken, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        setLogLevel('debug');
         
-        <!-- Barra de Navegación -->
-        <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
-            <div class="flex-1 flex justify-center space-x-4">
-                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors">
-                    Módulos
-                </button>
-                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-500 transition-colors">
-                    Posts
-                </button>
-            </div>
-            <div class="flex-1 flex justify-end mt-4 md:mt-0">
-                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg no-underline">
-                    Sé parte del 1%
-                </a>
-            </div>
-        </nav>
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
         
-        <div class="pt-24">
-            <!-- Sección de Módulos (Inicialmente visible) -->
-            <div id="modulesSection">
-                <header class="bg-[#1a1c29] text-white py-16">
-                    <div class="container-section">
-                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
-                        <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
-                        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection">
-                                <span>1 Cultura Digital: Marketing y Publicidad</span>
-                            </button>
-                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline">
-                                <span>2. Fundamentos de la comunicación</span>
-                            </button>
-                        </div>
-                    </div>
-                </header>
+        // Aquí es donde tienes que pegar tu ID de usuario de tu PC.
+        // La ID actual de creador es 'Alejandro_1', pero para que funcione en tu PC, debes reemplazarla con tu nueva ID.
+        // Ejemplo: const creatorUserId = "tu_nueva_id_unica";
+        const creatorUserId = "Alejandro_1";
+
+        let userId = null;
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('userIdDisplay').innerText = `Tu ID: ${userId}`;
+                if (userId === creatorUserId) {
+                    document.getElementById('postForm').classList.remove('hidden');
+                }
+                // Call loadPosts here, inside the auth state change listener
+                loadPosts();
+            } else {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Error signing in:", error);
+                }
+            }
+        });
+
+        async function publishPost(title, content) {
+            if (!title || !content) {
+                showCustomAlert("Por favor, completa todos los campos.");
+                return;
+            }
+            try {
+                // Ruta corregida: se usa la ruta pública recomendada para la aplicación
+                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
+                await addDoc(postsCollectionRef, {
+                    title: title,
+                    content: content,
+                    authorId: userId,
+                    createdAt: serverTimestamp()
+                });
+                console.log("Post publicado con éxito");
+                document.getElementById('postTitle').value = '';
+                document.getElementById('postContent').value = '';
+                showCustomAlert("¡Publicación enviada con éxito!");
+            } catch (e) {
+                console.error("Error al añadir la publicación: ", e);
+                showCustomAlert("Error al enviar la publicación. Inténtalo de nuevo.");
+            }
+        }
+        window.publishPost = publishPost;
+        
+        function showCustomAlert(message) {
+            const modal = document.getElementById('customAlertModal');
+            document.getElementById('customAlertMessage').innerText = message;
+            modal.style.display = 'flex';
+        }
+        window.showCustomAlert = showCustomAlert;
+
+
+        function loadPosts() {
+            try {
+                // Ruta corregida: se usa la misma ruta para leer los datos públicos
+                const postsCollectionRef = collection(db, `artifacts/${appId}/public/data/posts`);
                 
-                <!-- Contenedor de contenido para Módulo 1 -->
-                <div id="module1Content">
-                    <section class="container-section flex flex-col items-center justify-center">
-                        <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-4xl">
-                            <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left text-center md:text-left">
-                                <h3 class="text-4xl font-bold mt-16 mb-4">Cultura Digital: Marketing y Publicidad en la Era Conectada</h3>
-                                <p class="text-lg mb-2">Por Alejandro Otero</p>
-                                <p class="text-lg leading-relaxed mb-6">
-                                    Descubre cómo la cultura digital está transformando la comunicación, la interacción y los negocios en la era digital.
-                                </p>
-                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="glow-button text-white font-bold py-3 px-6 rounded-lg no-underline">
-                                    Obtener Libro Ahora
-                                </a>
-                            </div>
-                            <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
-                                <img src="Gemini_Generated_Image_4rqkhq4rqkhq4rqk.jpg" alt="Portada del libro Cultura Digital" class="max-h-[550px]">
-                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
-                            </div>
-                        </div>
-                    </section>
-                    
-                    <section class="container-section text-center fade-in">
-                        <h2 class="text-3xl md:text-4xl font-bold mb-10">¿Qué encontrarás en este libro?</h2>
-                        <div class="flex flex-col md:flex-row items-start text-left">
-                            <div class="md:w-1/2 pr-0 md:pr-12 mb-8 md:mb-0">
-                                <p class="text-lg leading-relaxed">
-                                    <span class="text-blue-400">■</span> <strong>Cultura Digital: Marketing y Publicidad en la Era Conectada</strong> de Alejandro Otero no es solo un libro, es una guía para entender el nuevo paradigma que está transformando la forma en que nos comunicamos, interactuamos y hacemos negocios en la era digital.
-                                </p>
-                                <p class="mt-6 text-lg leading-relaxed">
-                                    En sus páginas descubrirás cómo la cultura digital dejó de ser una moda pasajera para convertirse en el eje central de la interacción humana y del marketing moderno.
-                                </p>
-                            </div>
-                            <div class="md:w-1/2 pl-0 md:pl-12">
-                                <h3 class="text-2xl font-bold mb-4">🌐 Lo que encontrarás dentro:</h3>
-                                <ul class="list-disc list-inside space-y-3 text-lg leading-relaxed">
-                                    <li><strong class="text-blue-400">Los pilares de la cultura digital:</strong> conectividad, interactividad e inmediatez.</li>
-                                    <li><strong class="text-blue-400">La evolución del marketing y la publicidad:</strong> de mensajes unidireccionales a conversaciones auténticas y relaciones duraderas.</li>
-                                    <li><strong class="text-blue-400">Principios prácticos:</strong> escucha activa, generación de valor, interactividad y adaptabilidad.</li>
-                                    <li><strong class="text-blue-400">El nuevo papel del consumidor:</strong> de receptor pasivo a creador y protagonista de las historias de marca.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                    
-                    <section class="container-section text-center fade-in">
-                        <h2 class="text-3xl md:text-4xl font-bold mb-4">En resumen</h2>
-                        <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-8">
-                            Este libro demuestra que las marcas que abrazan la cultura digital con autenticidad, agilidad y visión estratégica no solo sobrevivirán, sino que crecerán y liderarán en la era conectada.
-                        </p>
-                        <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
-                        <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
-                            <img src="image_252d2a.jpg" alt="Imagen del autor" class="w-24 h-24 md:w-32 md:h-32 rounded-full shadow-lg object-cover mb-6 md:mb-0 md:mr-8 fade-in">
-                            <div>
-                                <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
-                                <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
-                                <p class="text-lg leading-relaxed">
-                                    Alejandro Otero es un apasionado del marketing y la publicidad, con la firme creencia de que el aprendizaje debe ser práctico, accesible y compartido. Su misión es acompañar a personas, emprendedores y marcas en su proceso de descubrir cómo conectar con sus audiencias, comunicar sus ideas y crecer en el mundo digital.
-                                    Con un enfoque basado en la colaboración y la experimentación, Alejandro promueve que todos podamos aprender paso a paso, aplicando conceptos de marketing y publicidad de forma sencilla y efectiva. Para él, cada estrategia, cada campaña y cada interacción son oportunidades para aprender algo nuevo y mejorar.
-                                    A través de su trabajo, busca inspirar a otros a perder el miedo a probar, equivocarse y volver a intentar, porque el marketing digital no se trata solo de vender, sino de construir relaciones, generar valor y crecer juntos en la era conectada.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-                </div>
+                onSnapshot(postsCollectionRef, (snapshot) => {
+                    const updatesContainer = document.getElementById('updatesContainer');
+                    updatesContainer.innerHTML = '';
+                    if (snapshot.empty) {
+                        updatesContainer.innerHTML = `<p class="text-center text-gray-400 mt-4">Aún no hay actualizaciones. ¡Sé el primero en publicar!</p>`;
+                    } else {
+                        const posts = [];
+                        snapshot.forEach(doc => {
+                            posts.push(doc.data());
+                        });
 
-                <!-- Contenedor de contenido para Módulo 2 -->
-                <div id="module2Content" class="module-content-hidden">
-                    <section class="container-section flex flex-col items-center justify-center">
-                        <div class="flex flex-col items-center text-center w-full max-w-4xl">
-                            <h3 class="text-4xl font-bold mt-16 mb-4 text-orange-400">¡Algo grande se aproxima, muy pronto!</h3>
-                            <p class="text-lg leading-relaxed mb-6">
-                                Los fundamentos de la comunicación son la clave para cualquier estrategia de marketing o publicidad exitosa. Es lo que te permite conectar realmente con tu audiencia, construir una marca memorable y generar un impacto duradero. Prepárate para descubrir los secretos detrás de los mensajes que resuenan y las historias que venden. ¡No te pierdas esta oportunidad de dominar el arte de la comunicación!
-                            </p>
-                            <div class="countdown-container">
-                                <div class="countdown-item">
-                                    <span id="days" class="countdown-number">00</span>
-                                    <span class="countdown-label">Días</span>
-                                </div>
-                                <div class="countdown-item">
-                                    <span id="hours" class="countdown-number">00</span>
-                                    <span class="countdown-label">Horas</span>
-                                </div>
-                                <div class="countdown-item">
-                                    <span id="minutes" class="countdown-number">00</span>
-                                    <span class="countdown-label">Minutos</span>
-                                </div>
-                                <div class="countdown-item">
-                                    <span id="seconds" class="countdown-number">00</span>
-                                    <span class="countdown-label">Segundos</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            
-            <!-- Sección de Posts (Inicialmente oculta) -->
-            <div id="postsSection" class="hidden">
-                <section class="container-section text-white mt-8">
-                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
-                    <div id="updatesContainer">
-                        <div class="text-center text-gray-400">No hay actualizaciones disponibles.</div>
-                    </div>
-                </section>
-            </div>
+                        posts.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
-            <!-- Footer -->
-            <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
-                <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
-                    <div class="mb-4 md:mb-0">
-                        <h4 class="text-2xl font-bold">Cultura Digital</h4>
-                    </div>
-                    <div class="flex-grow flex justify-center items-center">
-                        <a href="https://www.instagram.com/alejxot_23/" target="_blank" rel="noopener noreferrer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram text-gray-400 hover:text-white transition-colors">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="text-sm text-gray-400">
-                        <p>&copy; 2025 Todos los derechos reservados.</p>
-                        <p>Diseñado para la era digital conectada.</p>
-                    </div>
-                </div>
-            </footer>
-        </div>
-    </div>
-    
-    <script>
+                        posts.forEach(post => {
+                            const postElement = document.createElement('div');
+                            postElement.className = 'bg-[#1a1c29] p-6 rounded-lg shadow-md mb-6';
+                            
+                            const date = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString() : 'Fecha desconocida';
+
+                            postElement.innerHTML = `
+                                <h3 class="text-2xl font-bold mb-2 text-blue-400">${post.title}</h3>
+                                <p class="text-lg leading-relaxed text-gray-200">${post.content}</p>
+                                <p class="text-sm mt-4 text-gray-500">Publicado el: ${date}</p>
+                            `;
+                            updatesContainer.appendChild(postElement);
+                        });
+                    }
+                });
+            } catch (e) {
+                console.error("Error al cargar las publicaciones: ", e);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const postModal = document.getElementById('postModal');
             const modulesSection = document.getElementById('modulesSection');
@@ -457,7 +353,6 @@
 
             openModal('postModal');
 
-            // Lógica del contador
             const daysEl = document.getElementById('days');
             const hoursEl = document.getElementById('hours');
             const minutesEl = document.getElementById('minutes');
@@ -501,10 +396,243 @@
                 }, 1000);
             }
             
-            // Iniciar el contador al cargar el DOM
             startCountdown();
-
         });
     </script>
+</head>
+<body class="bg-[#12141f]">
+
+    <!-- Modal de Bienvenida -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal('postModal')">×</button>
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">Bienvenida 👋🏻</h2>
+            <p class="text-lg leading-relaxed mb-6">
+                Si estás leyendo esto, significa que quieres aprender marketing y publicidad. Y seguramente estás aquí por una de dos razones:
+                <br><br>
+                1️⃣ Piensas que soy un vendehúmos (déjame decirte que no, dejo que mi cuenta @pxwer.up hable por sí sola).
+                <br>
+                2️⃣ Quieres aprender marketing y publicidad desde cero, pero no hacerlo solo.
+                <br><br>
+                Por eso creé este programa gratuito: cada semana compartiré un e-book práctico, como si fuera la universidad… pero mejor. 🚀
+                <br>
+                Suscríbete ahora y forma parte del 1% que decide crecer.
+            </p>
+            <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
+            <div class="mb-6">
+                
+                <p class="text-sm mt-2 text-gray-400">
+                    Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
+                </p>
+            </div>
+            <div class="mb-6">
+                
+                <p class="text-sm mt-2 text-gray-400">
+                    Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
+                </p>
+            </div>
+            <div class="mb-6">
+                
+                <p class="text-sm mt-2 text-gray-400">
+                    Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
+                </p>
+            </div>
+            <p class="text-lg leading-relaxed mt-8">
+                Es por eso, colega, que después de ver todo este crecimiento quise dar un paso más grande. Dejé de subir videos durante 1 mes para tomar una decisión importante: la mejor forma de avanzar es ayudando a más personas 🚀.
+                Por eso creé este programa 100% gratuito, donde aprenderemos juntos sobre marketing y publicidad, con E-Books gratis 📚 y ejercicios prácticos que te ayudarán a cumplir tus objetivos.
+                La idea es simple: yo te comparto la información y el valor que he estado aprendiendo, y tú lo aplicas en tu proyecto o negocio 💡.
+            </p>
+            <p class="text-lg font-bold mt-4 leading-relaxed text-red-400">
+                Pero ojo 👀, no te recomiendo que te suscribas si solo quieres mirar desde la barrera. Este programa es para quienes quieren pasar de ser espectadores a creadores.
+            </p>
+        </div>
+    </div>
+
+    <!-- Contenido Principal de la Página -->
+    <div id="mainContent">
+        
+        <!-- Barra de Navegación -->
+        <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
+            <div class="flex-1 flex justify-center space-x-4">
+                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-500 transition-colors">
+                    Módulos
+                </button>
+                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors">
+                    Posts
+                </button>
+            </div>
+            <div class="flex-1 flex justify-end mt-4 md:mt-0">
+                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg no-underline">
+                    Sé parte del 1%
+                </a>
+            </div>
+        </nav>
+        
+        <div class="pt-24">
+            <!-- Sección de Módulos (Inicialmente oculta) -->
+            <div id="modulesSection" class="hidden">
+                <header class="bg-[#1a1c29] text-white py-16">
+                    <div class="container-section">
+                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
+                        <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
+                        <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection">
+                                <span>1 Cultura Digital: Marketing y Publicidad</span>
+                            </button>
+                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline">
+                                <span>2. Fundamentos de la comunicación</span>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+                
+                <!-- Contenedor de contenido para Módulo 1 -->
+                <div id="module1Content">
+                    <section class="container-section flex flex-col items-center justify-center">
+                        <div class="flex flex-col md:flex-row items-start justify-center w-full max-w-4xl">
+                            <div class="md:w-1/2 mb-8 md:mb-0 slide-in-left text-center md:text-left">
+                                <h3 class="text-4xl font-bold mt-16 mb-4">Cultura Digital: Marketing y Publicidad en la Era Conectada</h3>
+                                <p class="text-lg mb-2">Por Alejandro Otero</p>
+                                <p class="text-lg leading-relaxed mb-6">
+                                    Descubre cómo la cultura digital está transformando la comunicación, la interacción y los negocios en la era digital.
+                                </p>
+                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="glow-button text-white font-bold py-3 px-6 rounded-lg no-underline">
+                                    Obtener Libro Ahora
+                                </a>
+                            </div>
+                            <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
+                                
+                                <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="container-section text-center fade-in">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-10">¿Qué encontrarás en este libro?</h2>
+                        <div class="flex flex-col md:flex-row items-start text-left">
+                            <div class="md:w-1/2 pr-0 md:pr-12 mb-8 md:mb-0">
+                                <p class="text-lg leading-relaxed">
+                                    <span class="text-blue-400">■</span> <strong>Cultura Digital: Marketing y Publicidad en la Era Conectada</strong> de Alejandro Otero no es solo un libro, es una guía para entender el nuevo paradigma que está transformando la forma en que nos comunicamos, interactuamos y hacemos negocios en la era digital.
+                                </p>
+                                <p class="mt-6 text-lg leading-relaxed">
+                                    En sus páginas descubrirás cómo la cultura digital dejó de ser una moda pasajera para convertirse en el eje central de la interacción humana y del marketing moderno.
+                                </p>
+                            </div>
+                            <div class="md:w-1/2 pl-0 md:pl-12">
+                                <h3 class="text-2xl font-bold mb-4">🌐 Lo que encontrarás dentro:</h3>
+                                <ul class="list-disc list-inside space-y-3 text-lg leading-relaxed">
+                                    <li><strong class="text-blue-400">Los pilares de la cultura digital:</strong> conectividad, interactividad e inmediatez.</li>
+                                    <li><strong class="text-blue-400">La evolución del marketing y la publicidad:</strong> de mensajes unidireccionales a conversaciones auténticas y relaciones duraderas.</li>
+                                    <li><strong class="text-blue-400">Principios prácticos:</strong> escucha activa, generación de valor, interactividad y adaptabilidad.</li>
+                                    <li><strong class="text-blue-400">El nuevo papel del consumidor:</strong> de receptor pasivo a creador y protagonista de las historias de marca.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section class="container-section text-center fade-in">
+                        <h2 class="text-3xl md:text-4xl font-bold mb-4">En resumen</h2>
+                        <p class="text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+                            Este libro demuestra que las marcas que abrazan la cultura digital con autenticidad, agilidad y visión estratégica no solo sobrevivirán, sino que crecerán y liderarán en la era conectada.
+                        </p>
+                        <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">Descargar Gratis</a>
+                        <div class="mt-20 flex flex-col md:flex-row items-center md:items-start text-center md:text-left">
+                            
+                            <div>
+                                <h3 class="text-2xl font-bold mb-2">Sobre el Autor</h3>
+                                <p class="text-xl font-semibold text-gray-400">Alejandro Otero</p>
+                                <p class="text-lg leading-relaxed">
+                                    Alejandro Otero es un apasionado del marketing y la publicidad, con la firme creencia de que el aprendizaje debe ser práctico, accesible y compartido. Su misión es acompañar a personas, emprendedores y marcas en su proceso de descubrir cómo conectar con sus audiencias, comunicar sus ideas y crecer en el mundo digital.
+                                    Con un enfoque basado en la colaboración y la experimentación, Alejandro promueve que todos podamos aprender paso a paso, aplicando conceptos de marketing y publicidad de forma sencilla y efectiva. Para él, cada estrategia, cada campaña y cada interacción son oportunidades para aprender algo nuevo y mejorar.
+                                    A través de su trabajo, busca inspirar a otros a perder el miedo a probar, equivocarse y volver a intentar, porque el marketing digital no se trata solo de vender, sino de construir relaciones, generar valor y crecer juntos en la era conectada.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Contenedor de contenido para Módulo 2 -->
+                <div id="module2Content" class="module-content-hidden">
+                    <section class="container-section flex flex-col items-center justify-center">
+                        <div class="flex flex-col items-center text-center w-full max-w-4xl">
+                            <h3 class="text-4xl font-bold mt-16 mb-4 text-orange-400">¡Algo grande se aproxima, muy pronto!</h3>
+                            <p class="text-lg leading-relaxed mb-6">
+                                Los fundamentos de la comunicación son la clave para cualquier estrategia de marketing o publicidad exitosa. Es lo que te permite conectar realmente con tu audiencia, construir una marca memorable y generar un impacto duradero. Prepárate para descubrir los secretos detrás de los mensajes que resuenan y las historias que venden. ¡No te pierdas esta oportunidad de dominar el arte de la comunicación!
+                            </p>
+                            <div class="countdown-container">
+                                <div class="countdown-item">
+                                    <span id="days" class="countdown-number">00</span>
+                                    <span class="countdown-label">Días</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="hours" class="countdown-number">00</span>
+                                    <span class="countdown-label">Horas</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="minutes" class="countdown-number">00</span>
+                                    <span class="countdown-label">Minutos</span>
+                                </div>
+                                <div class="countdown-item">
+                                    <span id="seconds" class="countdown-number">00</span>
+                                    <span class="countdown-label">Segundos</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Sección de Posts (Inicialmente visible) -->
+            <div id="postsSection">
+                <section class="container-section text-white mt-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
+                    <p class="text-center text-gray-500 mb-6" id="userIdDisplay">Tu ID: </p>
+
+                    <!-- Formulario de publicación visible solo para el creador -->
+                    <div id="postForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
+                        <h3 class="text-xl font-bold mb-4">Crear nueva publicación</h3>
+                        <input type="text" id="postTitle" placeholder="Título de la publicación" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500">
+                        <textarea id="postContent" placeholder="Contenido de la publicación" rows="5" class="w-full p-2 mb-4 rounded-md bg-[#2d3142] text-white placeholder-gray-500"></textarea>
+                        <button onclick="publishPost(document.getElementById('postTitle').value, document.getElementById('postContent').value)" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Publicar</button>
+                    </div>
+
+                    <div id="updatesContainer">
+                        <div class="text-center text-gray-400">Cargando publicaciones...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Modal de alerta personalizado -->
+            <div id="customAlertModal" class="modal">
+                <div class="modal-content text-center">
+                    <button class="close-button" onclick="closeModal('customAlertModal')">×</button>
+                    <p id="customAlertMessage" class="text-xl font-semibold"></p>
+                    <button onclick="closeModal('customAlertModal')" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-[#1a1c29] text-white py-8 mt-auto">
+                <div class="container-section flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                    <div class="mb-4 md:mb-0">
+                        <h4 class="text-2xl font-bold">Cultura Digital</h4>
+                    </div>
+                    <div class="flex-grow flex justify-center items-center">
+                        <a href="https://www.instagram.com/alejxot_23/" target="_blank" rel="noopener noreferrer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram text-gray-400 hover:text-white transition-colors">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        <p>&copy; 2025 Todos los derechos reservados.</p>
+                        <p>Diseñado para la era digital conectada.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 </body>
 </html>

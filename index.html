@@ -183,6 +183,15 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
+        .info-box {
+            background-color: #1a1c29;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-[#12141f]">
@@ -396,14 +405,14 @@
             
             <!-- Sección de Posts (Inicialmente oculta) -->
             <div id="postsSection" class="hidden container-section">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">Últimas Actualizaciones</h2>
-                <div class="flex justify-end items-center mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div id="userIdDisplay" class="info-box flex-grow mr-2">Cargando ID de usuario...</div>
                     <button onclick="openModal('createPostModal')" class="shine-button text-white font-bold py-2 px-4 rounded-lg shadow-lg">
                         Crear Post
                     </button>
                 </div>
                 <div id="postsContainer">
-                    <div class="text-center text-gray-400">No hay publicaciones guardadas en tu navegador. ¡Crea una para comenzar!</div>
+                    <div class="text-center text-gray-400">Cargando posts...</div>
                 </div>
             </div>
 
@@ -427,11 +436,193 @@
                         <p>Diseñado para la era digital conectada.</p>
                     </div>
                 </div>
+                </div>
             </footer>
         </div>
     </div>
     
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // V A R I A B L E S   G L O B A L E S   D E L   E N T O R N O
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* Pega tu objeto de configuración de Firebase aquí */ };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Inicialización de Firebase
+        let app, auth, db, userId;
+
+        function initializeFirebase() {
+            try {
+                if (!app) {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                    
+                    if (initialAuthToken) {
+                        signInWithCustomToken(auth, initialAuthToken).catch(error => {
+                            console.error("Error signing in with custom token:", error);
+                            signInAnonymously(auth);
+                        });
+                    } else {
+                        signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            document.getElementById('userIdDisplay').textContent = `Tu ID de usuario: ${userId}`;
+                            loadPosts();
+                        } else {
+                            document.getElementById('userIdDisplay').textContent = 'Tu ID de usuario: Anónimo';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error al inicializar Firebase:", error);
+            }
+        }
+
+        // Lógica para cargar posts desde una colección pública en Firestore
+        function loadPosts() {
+            const postsCollectionRef = collection(db, `/artifacts/${appId}/public/data/posts`);
+            const q = query(postsCollectionRef, orderBy('createdAt', 'desc'));
+
+            onSnapshot(q, (querySnapshot) => {
+                postsContainer.innerHTML = '';
+                if (querySnapshot.empty) {
+                    postsContainer.innerHTML = '<div class="text-center text-gray-400">No hay publicaciones en la base de datos pública. ¡Crea una para comenzar!</div>';
+                } else {
+                    querySnapshot.forEach((doc) => {
+                        const post = doc.data();
+                        const postElement = document.createElement('div');
+                        postElement.classList.add('post-card', 'fade-in');
+
+                        let dateString = '';
+                        if (post.createdAt) {
+                            const date = post.createdAt.toDate();
+                            dateString = new Intl.DateTimeFormat('es-ES', {
+                                year: 'numeric', month: 'long', day: 'numeric',
+                                hour: '2-digit', minute: '2-digit'
+                            }).format(date);
+                        }
+
+                        postElement.innerHTML = `
+                            <h3 class="text-2xl font-bold mb-2">${post.title}</h3>
+                            <p class="text-sm text-gray-500 mb-2">Publicado el: ${dateString}</p>
+                            <p class="text-lg leading-relaxed mb-4">${post.content}</p>
+                            ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagen del post" class="post-image mx-auto my-4">` : ''}
+                        `;
+                        postsContainer.appendChild(postElement);
+                    });
+                }
+            }, (error) => {
+                console.error("Error al escuchar los posts:", error);
+                postsContainer.innerHTML = `<div class="text-center text-red-400">Error al cargar los posts: ${error.message}</div>`;
+            });
+        }
+        
+        // Lógica para mostrar y ocultar modales
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        window.openModal = openModal;
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        window.closeModal = closeModal;
+
+        // Función para mostrar la sección correcta
+        function showSection(section) {
+            if (section === 'modules') {
+                modulesSection.classList.remove('hidden');
+                postsSection.classList.add('hidden');
+                modulesNavBtn.classList.add('bg-blue-500');
+                modulesNavBtn.classList.remove('bg-[#1a1c29]');
+                postsNavBtn.classList.remove('bg-blue-500');
+                postsNavBtn.classList.add('bg-[#1a1c29]');
+            } else if (section === 'posts') {
+                postsSection.classList.remove('hidden');
+                modulesSection.classList.add('hidden');
+                postsNavBtn.classList.add('bg-blue-500');
+                postsNavBtn.classList.remove('bg-[#1a1c29]');
+                modulesNavBtn.classList.remove('bg-blue-500');
+                modulesNavBtn.classList.add('bg-[#1a1c29]');
+            }
+        }
+        window.showSection = showSection;
+        
+        // Función para alternar el contenido de los módulos
+        function toggleCourseContent(contentId, buttonElement) {
+            const allContentSections = document.querySelectorAll('#modulesSection > div');
+            allContentSections.forEach(section => {
+                if (section.id.includes('Content')) {
+                    section.classList.add('module-content-hidden');
+                }
+            });
+
+            const selectedContent = document.getElementById(contentId);
+            if (selectedContent) {
+                selectedContent.classList.remove('module-content-hidden');
+            }
+
+            const allButtons = document.querySelectorAll('#modulesSection button.subsection-card');
+            allButtons.forEach(btn => {
+                btn.classList.remove('active-subsection', 'bg-blue-500');
+                btn.classList.add('bg-[#1a1c29]');
+            });
+            buttonElement.classList.add('active-subsection', 'bg-blue-500');
+            buttonElement.classList.remove('bg-[#1a1c29]');
+        }
+        window.toggleCourseContent = toggleCourseContent;
+
+        // Lógica del contador
+        function startCountdown() {
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
+
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            let daysUntilMonday = 1 - dayOfWeek;
+            if (daysUntilMonday <= 0) {
+                daysUntilMonday += 7;
+            }
+            
+            const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
+            nextMonday.setHours(0, 0, 0, 0);  
+            const targetDate = nextMonday.getTime();
+
+            const countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    daysEl.innerHTML = '00';
+                    hoursEl.innerHTML = '00';
+                    minutesEl.innerHTML = '00';
+                    secondsEl.innerHTML = '00';
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                daysEl.innerHTML = days.toString().padStart(2, '0');
+                hoursEl.innerHTML = hours.toString().padStart(2, '0');
+                minutesEl.innerHTML = minutes.toString().padStart(2, '0');
+                secondsEl.innerHTML = seconds.toString().padStart(2, '0');
+
+            }, 1000);
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             const postModal = document.getElementById('postModal');
             const createPostModal = document.getElementById('createPostModal');
@@ -441,159 +632,37 @@
             const postsNavBtn = document.getElementById('postsNavBtn');
             const postsContainer = document.getElementById('postsContainer');
             const createPostForm = document.getElementById('createPostForm');
-
-            // Lógica para mostrar y ocultar modales
-            function openModal(modalId) {
-                document.getElementById(modalId).style.display = 'flex';
-            }
-            window.openModal = openModal;
-
-            function closeModal(modalId) {
-                document.getElementById(modalId).style.display = 'none';
-            }
-            window.closeModal = closeModal;
-
-            // Función para mostrar la sección correcta
-            function showSection(section) {
-                if (section === 'modules') {
-                    modulesSection.classList.remove('hidden');
-                    postsSection.classList.add('hidden');
-                    modulesNavBtn.classList.add('bg-blue-500');
-                    modulesNavBtn.classList.remove('bg-[#1a1c29]');
-                    postsNavBtn.classList.remove('bg-blue-500');
-                    postsNavBtn.classList.add('bg-[#1a1c29]');
-                } else if (section === 'posts') {
-                    postsSection.classList.remove('hidden');
-                    modulesSection.classList.add('hidden');
-                    postsNavBtn.classList.add('bg-blue-500');
-                    postsNavBtn.classList.remove('bg-[#1a1c29]');
-                    modulesNavBtn.classList.remove('bg-blue-500');
-                    modulesNavBtn.classList.add('bg-[#1a1c29]');
-                    loadPosts();
-                }
-            }
-            window.showSection = showSection;
             
-            // Función para alternar el contenido de los módulos
-            function toggleCourseContent(contentId, buttonElement) {
-                const allContentSections = document.querySelectorAll('#modulesSection > div');
-                allContentSections.forEach(section => {
-                    if (section.id.includes('Content')) {
-                        section.classList.add('module-content-hidden');
-                    }
-                });
-
-                const selectedContent = document.getElementById(contentId);
-                if (selectedContent) {
-                    selectedContent.classList.remove('module-content-hidden');
-                }
-
-                const allButtons = document.querySelectorAll('#modulesSection button.subsection-card');
-                allButtons.forEach(btn => {
-                    btn.classList.remove('active-subsection', 'bg-blue-500');
-                    btn.classList.add('bg-[#1a1c29]');
-                });
-                buttonElement.classList.add('active-subsection', 'bg-blue-500');
-                buttonElement.classList.remove('bg-[#1a1c29]');
-            }
-            window.toggleCourseContent = toggleCourseContent;
-
             openModal('postModal');
-
-            // Lógica del contador
-            const daysEl = document.getElementById('days');
-            const hoursEl = document.getElementById('hours');
-            const minutesEl = document.getElementById('minutes');
-            const secondsEl = document.getElementById('seconds');
-
-            function startCountdown() {
-                const now = new Date();
-                const dayOfWeek = now.getDay();
-                let daysUntilMonday = 1 - dayOfWeek;
-                if (daysUntilMonday <= 0) {
-                    daysUntilMonday += 7;
-                }
-                
-                const nextMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMonday);
-                nextMonday.setHours(0, 0, 0, 0);  
-                const targetDate = nextMonday.getTime();
-
-                const countdownInterval = setInterval(() => {
-                    const now = new Date().getTime();
-                    const distance = targetDate - now;
-
-                    if (distance < 0) {
-                        clearInterval(countdownInterval);
-                        daysEl.innerHTML = '00';
-                        hoursEl.innerHTML = '00';
-                        minutesEl.innerHTML = '00';
-                        secondsEl.innerHTML = '00';
-                        return;
-                    }
-
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    daysEl.innerHTML = days.toString().padStart(2, '0');
-                    hoursEl.innerHTML = hours.toString().padStart(2, '0');
-                    minutesEl.innerHTML = minutes.toString().padStart(2, '0');
-                    secondsEl.innerHTML = seconds.toString().padStart(2, '0');
-
-                }, 1000);
-            }
-            
             startCountdown();
+            initializeFirebase();
 
-            // Lógica para LocalStorage
+            // Lógica para agregar posts a la colección pública
             createPostForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                if (!userId) {
+                    console.error("Usuario no autenticado. No se puede crear un post.");
+                    return;
+                }
 
                 const title = document.getElementById('postTitle').value;
                 const content = document.getElementById('postContent').value;
                 const imageUrl = document.getElementById('postImageUrl').value;
                 
-                const postData = {
-                    id: Date.now(), // Un ID único para cada post
-                    title,
-                    content,
-                    imageUrl,
-                    createdAt: new Date().toISOString()
-                };
-
-                // Obtener posts existentes o inicializar un array vacío
-                const posts = JSON.parse(localStorage.getItem('posts')) || [];
-                posts.unshift(postData); // Agregar el nuevo post al inicio
-                localStorage.setItem('posts', JSON.stringify(posts));
-
-                closeModal('createPostModal');
-                createPostForm.reset();
-                loadPosts(); // Recargar los posts en la UI
-            });
-
-            function loadPosts() {
-                const posts = JSON.parse(localStorage.getItem('posts')) || [];
-                postsContainer.innerHTML = '';
-
-                if (posts.length === 0) {
-                    postsContainer.innerHTML = '<div class="text-center text-gray-400">No hay publicaciones guardadas en tu navegador. ¡Crea una para comenzar!</div>';
-                    return;
+                try {
+                    await addDoc(collection(db, `/artifacts/${appId}/public/data/posts`), {
+                        title,
+                        content,
+                        imageUrl,
+                        createdAt: serverTimestamp()
+                    });
+                    closeModal('createPostModal');
+                    createPostForm.reset();
+                } catch (error) {
+                    console.error("Error al agregar el post a Firestore:", error);
                 }
-                
-                posts.forEach((post) => {
-                    const postElement = document.createElement('div');
-                    postElement.classList.add('post-card', 'fade-in');
-                    postElement.innerHTML = `
-                        <h3 class="text-2xl font-bold mb-2">${post.title}</h3>
-                        <p class="text-lg leading-relaxed mb-4">${post.content}</p>
-                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Imagen del post" class="post-image mx-auto my-4">` : ''}
-                    `;
-                    postsContainer.appendChild(postElement);
-                });
-            }
-            
-            loadPosts(); // Cargar posts al iniciar
+            });
         });
     </script>
 </body>

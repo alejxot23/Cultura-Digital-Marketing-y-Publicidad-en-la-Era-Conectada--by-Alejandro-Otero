@@ -205,7 +205,6 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
-                document.getElementById('userIdDisplay').innerText = `Tu ID: ${userId}`;
                 loadPosts(); // Carga los posts una vez que el usuario está autenticado
             } else {
                 try {
@@ -315,7 +314,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const postModal = document.getElementById('postModal');
             const modulesSection = document.getElementById('modulesSection');
             const postsSection = document.getElementById('postsSection');
             const modulesNavBtn = document.getElementById('modulesNavBtn');
@@ -440,25 +438,29 @@
                 <br>
                 Suscríbete ahora y forma parte del 1% que decide crecer.
             </p>
+
             <h3 class="text-2xl font-bold mt-8 mb-4">Pruebas 👇🏻🔍</h3>
             <div class="mb-6">
-                
+                <img src="image_32c8af.jpg" alt="Captura de pantalla de la cuenta de Instagram" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Aquí fue cuando apenas estaba comenzando… subí solo 2 Reels y, para ser lo primero, tuvieron muy buenos números ✨. Lo mejor es que con esas dos publicaciones ya llegaron 10 seguidores 💪🔥. Un inicio pequeño, pero con mucho poder, porque todo gran proyecto empieza con un primer paso.
                 </p>
             </div>
+            
             <div class="mb-6">
-                
+                <img src="image_32ccab.jpg" alt="Captura de pantalla de la cuenta de Instagram con más seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de ver buenos números en los primeros Reels, seguí esto como un hobby y subí 8 videos más 🎥. Lo sorprendente fue que uno de ellos empezó a generar un gran impacto 🚀. En menos de dos semanas pasamos de solo 10 seguidores a casi 665… ¡imagina estar hablando en un teatro lleno con 665 personas escuchándote! 🔥✨ Este es solo el comienzo.
                 </p>
             </div>
+            
             <div class="mb-6">
-                
+                <img src="image_32ccc5.jpg" alt="Captura de pantalla de la cuenta de Instagram con más de 1800 seguidores" class="post-image mx-auto">
                 <p class="text-sm mt-2 text-gray-400">
                     Después de un mes, dejando que este video llegara a más personas, terminó alcanzando a más de 250,000 🚀. ¿Sabes lo que significa eso? Es como estar hablando en más de 3 estadios Azteca llenos a reventar 🏟️🔥. Además, pasamos de 10 seguidores a más de 1,823 con solo 8 publicaciones. Esto ya no es un hobby… es una comunidad que sigue creciendo 🙌.
                 </p>
             </div>
+
             <p class="text-lg leading-relaxed mt-8">
                 Es por eso, colega, que después de ver todo este crecimiento quise dar un paso más grande. Dejé de subir videos durante 1 mes para tomar una decisión importante: la mejor forma de avanzar es ayudando a más personas 🚀.
                 Por eso creé este programa 100% gratuito, donde aprenderemos juntos sobre marketing y publicidad, con E-Books gratis 📚 y ejercicios prácticos que te ayudarán a cumplir tus objetivos.
@@ -476,10 +478,10 @@
         <!-- Barra de Navegación -->
         <nav class="header-nav py-4 px-6 md:flex md:justify-between md:items-center">
             <div class="flex-1 flex justify-center space-x-4">
-                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-500 transition-colors">
+                <button onclick="showSection('modules')" id="modulesNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-500 transition-colors">
                     Módulos
                 </button>
-                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors">
+                <button onclick="showSection('posts')" id="postsNavBtn" class="py-2 px-4 rounded-lg text-white font-bold bg-[#1a1c29] hover:bg-blue-600 transition-colors">
                     Posts
                 </button>
             </div>
@@ -491,17 +493,17 @@
         </nav>
         
         <div class="pt-24">
-            <!-- Sección de Módulos (Inicialmente oculta) -->
-            <div id="modulesSection" class="hidden">
+            <!-- Sección de Módulos (Inicialmente visible) -->
+            <div id="modulesSection">
                 <header class="bg-[#1a1c29] text-white py-16">
                     <div class="container-section">
                         <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">NIVEL 1 LIBRO 1/5</h2>
                         <h3 class="text-2xl font-bold text-center md:text-left mb-4">Contenido del Curso</h3>
                         <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection">
+                            <button onclick="toggleCourseContent('module1Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline active-subsection bg-blue-500">
                                 <span>1 Cultura Digital: Marketing y Publicidad</span>
                             </button>
-                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline">
+                            <button onclick="toggleCourseContent('module2Content', this)" class="subsection-card w-full md:w-auto text-white flex flex-col justify-center items-center text-center py-4 px-6 rounded-lg shadow-lg no-underline bg-[#1a1c29]">
                                 <span>2. Fundamentos de la comunicación</span>
                             </button>
                         </div>
@@ -523,7 +525,6 @@
                                 </a>
                             </div>
                             <div class="relative md:w-1/2 flex justify-center md:justify-end slide-in-right md:pl-8 mt-8 md:mt-0">
-                                
                                 <a href="https://leoofut.gumroad.com/l/culturadigitalalejandro" target="_blank" class="absolute bottom-4 right-4 bg-green-600 text-white text-sm px-4 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-colors">Gratis</a>
                             </div>
                         </div>
@@ -604,8 +605,8 @@
                 </div>
             </div>
             
-            <!-- Sección de Posts (Inicialmente visible) -->
-            <div id="postsSection">
+            <!-- Sección de Posts (Inicialmente oculta) -->
+            <div id="postsSection" class="hidden">
                 <section class="container-section text-white mt-8">
                     <div class="flex items-center justify-center mb-8">
                         <h2 class="text-3xl md:text-4xl font-bold">Últimas Actualizaciones</h2>
@@ -616,7 +617,6 @@
                             </svg>
                         </button>
                     </div>
-                    <p class="text-center text-gray-500 mb-6" id="userIdDisplay">Tu ID: </p>
                     
                     <!-- Formulario para verificar la contraseña del creador -->
                     <div id="passwordCheckForm" class="hidden bg-[#1a1c29] p-6 rounded-lg shadow-lg mb-8">
